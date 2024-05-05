@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/icons8-color-wheel-96.png</file>
+    <file>icons/icons8-drafting-compass-100.png</file>
+    <file>icons/icons8-line-96.png</file>
+    <file>icons/icons8-line-97.png</file>
+    <file>icons/icons8-analysis-100.png</file>
+    <file>icons/icons8-camera-100.png</file>
+    <file>icons/icons8-circle-100.png</file>
+    <file>icons/icons8-movie-camera-100.png</file>
+    <file>icons/icons8-ruler-50.png</file>
+    <file>icons/icons8-science-class-with-nucleus-and-atoms-revolving-around-it-96.png</file>
+    <file>icons/icons8-angle-96.png</file>
+    <file>icons/icons8-square-32.png</file>
+  </qresource>
+</RCC>
