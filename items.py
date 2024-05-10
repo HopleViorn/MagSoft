@@ -59,11 +59,12 @@ class LineArea(QtWidgets.QGraphicsLineItem):
         x1,y1=pos.x(),pos.y()
         self.setLine(self.x0,self.y0,x1,y1)
 
-class VerticalLine(QtWidgets.QGraphicsLineItem):
+class HorizontalLine(QtWidgets.QGraphicsLineItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
-        super(VerticalLine,self).__init__(x0,y0,x1,y1)
+        super(HorizontalLine,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
     
@@ -86,11 +87,12 @@ class VerticalLine(QtWidgets.QGraphicsLineItem):
         self.y1=self.y0
         self.setLine(self.x0,self.y0,self.x1,self.y1)
 
-class HorizontalLine(QtWidgets.QGraphicsLineItem):
+class VerticalLine(QtWidgets.QGraphicsLineItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
-        super(HorizontalLine,self).__init__(x0,y0,x1,y1)
+        super(VerticalLine,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
     
@@ -206,7 +208,8 @@ class CalibrationLine():
         
         self.text.setPlainText('--- mm\n{:.2f} px'.format(np.linalg.norm(dv)))
 
-        dv=dv/np.linalg.norm(dv)*self.width
+        if np.linalg.norm(dv)>0:
+            dv=dv/np.linalg.norm(dv)*self.width
 
         self.secLine0.setLine(x0-dv[0],y0-dv[1],x0+dv[0],y0+dv[1])
         self.secLine1.setLine(x1-dv[0],y1-dv[1],x1+dv[0],y1+dv[1])
@@ -241,7 +244,7 @@ class CalibrationLine():
         self.setSegment(self.x0,self.y0,x1,y1)
 
 class CalibrationRect(QtWidgets.QGraphicsRectItem):
-    def __init__(self,x0=0,y0=0,x1=0,y1=0):
+    def __init__(self,x0=0,y0=0,x1=0,y1=0,md=0,avg=0):
         super(CalibrationRect,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
 
@@ -250,8 +253,8 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
 
         self.text=QtWidgets.QGraphicsTextItem('Average:')
         self.text.setDefaultTextColor(Qt.red)
-        self.md=0
-        self.avg=0
+        self.md=md
+        self.avg=avg
 
         self.items=[self,self.text]
 
@@ -295,6 +298,14 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
     def onMoving(self,pos):
         x1,y1=pos.x(),pos.y()
         self.setSegment(self.x0,self.y0,x1,y1)
+
+
+        
+class DummyRect():
+    def __init__(self,md=0,avg=0):
+        self.md=md
+        self.avg=avg
+
 
 class MeasureAngle():
     def __init__(self):

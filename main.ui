@@ -104,7 +104,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="DevicePage">
               <attribute name="title">
@@ -115,34 +115,6 @@
                 <widget class="ToupCamWidget" name="toupcamwidget" native="true"/>
                </item>
               </layout>
-             </widget>
-             <widget class="QWidget" name="tab">
-              <attribute name="title">
-               <string>Options</string>
-              </attribute>
-              <widget class="QPushButton" name="pushButton_3">
-               <property name="geometry">
-                <rect>
-                 <x>30</x>
-                 <y>30</y>
-                 <width>211</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Spectrum</string>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/icons/icons8-color-wheel-96.png</normaloff>:/icons/icons/icons8-color-wheel-96.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
              </widget>
              <widget class="QWidget" name="AnalysisPage">
               <attribute name="title">
@@ -204,7 +176,7 @@
                       </size>
                      </property>
                     </widget>
-                    <widget class="QPushButton" name="vertical_line">
+                    <widget class="QPushButton" name="horizontal_line">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -236,7 +208,7 @@
                       </size>
                      </property>
                     </widget>
-                    <widget class="QPushButton" name="horizontal_line">
+                    <widget class="QPushButton" name="vertical_line">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -640,7 +612,7 @@
                      </size>
                     </property>
                    </widget>
-                   <widget class="QLabel" name="initialized">
+                   <widget class="InitializeLabel" name="initializeLabel">
                     <property name="enabled">
                      <bool>true</bool>
                     </property>
@@ -649,11 +621,11 @@
                       <x>20</x>
                       <y>170</y>
                       <width>141</width>
-                      <height>21</height>
+                      <height>51</height>
                      </rect>
                     </property>
                     <property name="text">
-                     <string>Initialized</string>
+                     <string>Not Initialized</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -739,13 +711,41 @@
                <rect>
                 <x>10</x>
                 <y>10</y>
-                <width>251</width>
-                <height>271</height>
+                <width>261</width>
+                <height>281</height>
                </rect>
               </property>
               <property name="title">
                <string>Info</string>
               </property>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <widget class="LengthLabel" name="length_info">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>1</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Length Not Calibrated</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="MagCaliViewer" name="mag_info">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>8</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>mag_info</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </widget>
            </item>
@@ -758,7 +758,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="HorizonTab">
               <attribute name="title">
@@ -823,30 +823,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1534</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFIle">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionNothing_Here"/>
-    <addaction name="actionNothing_Here_2"/>
-   </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-   </widget>
-   <addaction name="menuFIle"/>
-   <addaction name="menuEdit"/>
-  </widget>
   <action name="actionone">
    <property name="text">
     <string>one</string>
@@ -888,6 +864,21 @@
   <customwidget>
    <class>CaptureList</class>
    <extends>QListView</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MagCaliViewer</class>
+   <extends>QLabel</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LengthLabel</class>
+   <extends>QLabel</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>InitializeLabel</class>
+   <extends>QLabel</extends>
    <header>widgets.h</header>
   </customwidget>
  </customwidgets>

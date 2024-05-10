@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import toupcam
 
 from main_ui import Ui_MainWindow as MainUI
-from items import RectArea,LineArea,MeasureLine,MeasureAngle,CalibrationLine,VerticalLine,HorizontalLine,CalibrationRect
+from items import RectArea,LineArea,MeasureLine,MeasureAngle,CalibrationLine,VerticalLine,HorizontalLine,CalibrationRect,DummyRect
+import variables
 
 class MainUI(QMainWindow, MainUI):
     def __init__(self):
@@ -15,6 +16,10 @@ class MainUI(QMainWindow, MainUI):
         self.setupUi(self)
 
 main_ui=None
+
+def lengthChanged():
+    main_ui.horizontalProfile.updateProfile()
+    main_ui.verticalProfile.updateProfile()
 
 def setUpTrigger():
     main_ui.toupcamwidget.lbl_video=main_ui.graphicsView.scene
@@ -29,19 +34,41 @@ def setUpTrigger():
     main_ui.calibration_length.clicked.connect(lambda: (cali_len.init(),main_ui.graphicsView.startDraw(drawItem=cali_len)))
     main_ui.calibration_magfiled.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=CalibrationRect()))
 
-
     main_ui.horizontalProfile.axis=0
     main_ui.verticalProfile.axis=1
+
     main_ui.graphicsView.selectChanged.connect(main_ui.horizontalProfile.setProfile)
     main_ui.graphicsView.selectChanged.connect(main_ui.verticalProfile.setProfile)
+
+    main_ui.graphicsView.magCaliChanged.connect(main_ui.mag_info.updateProfile)
+
+    main_ui.graphicsView.magCaliChanged.connect(main_ui.horizontalProfile.updateProfile)
+    main_ui.graphicsView.magCaliChanged.connect(main_ui.verticalProfile.updateProfile)
+
+    main_ui.graphicsView.lengthCaliChanged.connect(main_ui.horizontalProfile.updateProfile)
+    main_ui.graphicsView.lengthCaliChanged.connect(main_ui.verticalProfile.updateProfile)
+    main_ui.graphicsView.lengthCaliChanged.connect(main_ui.length_info.UpdateText)
 
     main_ui.captureList.selectImg.connect(main_ui.graphicsView.scene.setImage)
     main_ui.toupcamwidget.captured.connect(main_ui.captureList.addCapture)
 
     main_ui.initBtn.clicked.connect(main_ui.graphicsView.onInitialize)
 
+    main_ui.graphicsView.initializeChanged.connect(main_ui.initializeLabel.UpdateText)
+
+
+# sys._excepthook = sys.excepthook 
+# def exception_hook(exctype, value, traceback):
+#     print(exctype, value, traceback)
+#     sys._excepthook(exctype, value, traceback) 
+#     sys.exit(1) 
+# sys.excepthook = exception_hook 
 
 if __name__ == '__main__':
+
+    variables.rgb_mt.append(DummyRect(avg=0,md=0))
+    variables.rgb_mt.append(DummyRect(avg=256,md=999))
+
     QtCore.QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling,True)  
     QtCore.QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps,True)
     QtGui.QGuiApplication.setAttribute(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough,True)  
@@ -54,4 +81,5 @@ if __name__ == '__main__':
     setUpTrigger()
     
     main_ui.show()
+    
     sys.exit(app.exec_())
