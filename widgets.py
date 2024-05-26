@@ -95,8 +95,13 @@ class GraphicCalcThread(QtCore.QThread):
         self.img=img
 
     def run(self):
+        if variables.base_img.shape != self.img.shape:
+            variables.base_img=cv2.resize(variables.base_img,(self.img.shape[1],self.img.shape[0])).astype(np.uint8)
+            print(variables.base_img.shape)
+            print(self.img.shape)
         img=self.img-variables.base_img
-        img=variables.mag_lut[img[:,:,0]].astype(np.uint8)
+
+        img=variables.mag_lut[img].astype(np.uint8)
         img=cv2.applyColorMap(img,cv2.COLORMAP_JET)
         self.finish.emit(img)
 
@@ -107,13 +112,13 @@ class Canvas(QtWidgets.QGraphicsScene):
         path=get_resource_path(os.path.join('res','demo2.png'))
         img = cv_imread(path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = img
+        self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
+        img = img[:,:,0]
 
-        self.color_img=img
-        self.worker=GraphicCalcThread(copy.deepcopy(self.color_img))
+        self.single_img=img
+        self.worker=GraphicCalcThread(copy.deepcopy(self.single_img))
         self.worker.finish.connect(self.callback)
-        
-        self.callback(img)
+        # self.worker.start()
         self.setImage(img)
         
 
@@ -127,12 +132,12 @@ class Canvas(QtWidgets.QGraphicsScene):
         self.update()
 
     def Update(self):
-        self.worker.setImg(self.color_img)
+        self.worker.setImg(self.single_img)
 
         self.worker.start()
 
     def setImage(self,img):
-        self.color_img=img
+        self.single_img=img
         self.Update()
 
     def drawBackground(self, painter: QPainter, rect: QtCore.QRectF) -> None:
@@ -161,15 +166,14 @@ class MainViewer(QtWidgets.QGraphicsView):
         self.onDrawing=0
         self.drawingItem=None
 
-        variables.base_img=0
-
         self.color_map=cv2.COLORMAP_JET
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
 
     def onInitialize(self):
-        variables.base_img=copy.deepcopy(self.scene.color_img)
-        self.initializeChanged.emit(np.mean(variables.base_img[:,:,0]))
+        variables.base_img=copy.deepcopy(self.scene.single_img)
+        self.scene.Update()
+        self.initializeChanged.emit(np.mean(variables.base_img))
 
     def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
         ratio=event.angleDelta().y()
@@ -204,7 +208,7 @@ class MainViewer(QtWidgets.QGraphicsView):
                 l,r,u,d=(proc(rect.left()),proc(rect.right()),proc(rect.top()),proc(rect.bottom()))
                 l,r=min(l,r),max(l,r)
                 u,d=min(u,d),max(u,d)
-                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
                 self.selectChanged.emit(partial_img)
 
             elif rect is not None and isinstance(rect,HorizontalLine):
@@ -213,7 +217,7 @@ class MainViewer(QtWidgets.QGraphicsView):
                 l,r,u,d=proc(l),proc(r),proc(u),proc(d)
                 l,r=min(l,r),max(l,r)
                 u,d=min(u,d),max(u,d)
-                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
                 self.selectChanged.emit(partial_img)
 
             elif rect is not None and isinstance(rect,VerticalLine):
@@ -223,12 +227,12 @@ class MainViewer(QtWidgets.QGraphicsView):
                 l,r=min(l,r),max(l,r)
                 u,d=min(u,d),max(u,d)
                 print(l,r,u,d)
-                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
                 self.selectChanged.emit(partial_img)
 
             elif rect is not None and isinstance(rect,CalibrationRect):
                 l,r,u,d=rect.getRect()
-                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
                 avg=np.mean(partial_img)
 
                 import main
@@ -278,7 +282,7 @@ class ProfileViewer(ImgView):
 
     def updateProfile(self):
         # img=np.mean(self.profile,axis=2)
-        img=self.profile[:,:,0]
+        img=self.profile
         img=variables.mag_lut[img]
 
         plt.figure(figsize=(self.width()/100,self.height()/100))

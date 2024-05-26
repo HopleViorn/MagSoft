@@ -6,6 +6,9 @@ from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QCheckBox, QMessageBo
 import numpy as np
 import copy
 
+def convert_to_grey(img):
+    return img[:,:,0]
+
 class ToupCamWidget(QWidget):
     evtCallback = pyqtSignal(int)
     captured = pyqtSignal(object,object)
@@ -266,6 +269,7 @@ class ToupCamWidget(QWidget):
         if self.hcam:
             if self.pData is not None:
                 image=copy.deepcopy(np.frombuffer(self.pData,dtype=np.uint8).reshape((self.imgHeight,self.imgWidth,3)))
+                image=convert_to_grey(image)
                 self.count += 1
                 name='capture_{}'.format(self.count)
                 self.captured.emit(image,name)
@@ -301,6 +305,7 @@ class ToupCamWidget(QWidget):
         else:
             image = np.frombuffer(self.pData,np.uint8)
             image=image.reshape((self.imgHeight,self.imgWidth,3))
+            image=convert_to_grey(image)
             self.lbl_video.setImage(image)
             self.lbl_video.update()
 

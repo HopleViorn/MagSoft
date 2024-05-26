@@ -3,7 +3,7 @@ import numpy as np
 mm_per_pix=1
 rgb_mt=[]
 
-base_img=0
+base_img=np.zeros((1,1))
 
 # rgb_lut=[i for i in range(256)]
 mag_lut=np.array([i for i in range(256)])
