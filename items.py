@@ -144,7 +144,7 @@ class MeasureLine():
         
         
         self.text.setPos(x1,y1)
-        self.text.setPlainText('{:.2f} mm\n{:.2f} px'.format(np.linalg.norm(dv)*variables.mm_per_pix,np.linalg.norm(dv)))
+        self.text.setPlainText('{:.3f} mm\n{:.3f} px'.format(np.linalg.norm(dv)*variables.mm_per_pix,np.linalg.norm(dv)))
 
         dv=dv/np.linalg.norm(dv)*self.width
 
@@ -206,7 +206,7 @@ class CalibrationLine():
         dv=np.array([y0-y1,x1-x0])
         self.text.setPos(x1,y1)
         
-        self.text.setPlainText('--- mm\n{:.2f} px'.format(np.linalg.norm(dv)))
+        self.text.setPlainText('--- mm\n{:.3f} px'.format(np.linalg.norm(dv)))
 
         if np.linalg.norm(dv)>0:
             dv=dv/np.linalg.norm(dv)*self.width
@@ -224,10 +224,11 @@ class CalibrationLine():
                 item.setVisible(True)
             return 1
         if self.state==1:
-            self.x0,self.y0=pos.x(),pos.y()
+            self.x1,self.y1=pos.x(),pos.y()
             l=np.linalg.norm(np.array([self.y0-self.y1,self.x1-self.x0]))
+            print(l)
             variables.mm_per_pix=self.getDouble()/l
-            self.text.setPlainText('{:.2f} mm\n{:.2f} px'.format(l*variables.mm_per_pix,l))
+            self.text.setPlainText('{:.3f} mm\n{:.3f} px'.format(l*variables.mm_per_pix,l))
             return 0
 
     def getDouble(self):
@@ -240,8 +241,8 @@ class CalibrationLine():
         return self.items
 
     def onMoving(self,pos):
-        x1,y1=pos.x(),pos.y()
-        self.setSegment(self.x0,self.y0,x1,y1)
+        self.x1,self.y1=pos.x(),pos.y()
+        self.setSegment(self.x0,self.y0,self.x1,self.y1)
 
 class CalibrationRect(QtWidgets.QGraphicsRectItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0,md=0,avg=0):

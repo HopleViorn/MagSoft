@@ -47,6 +47,7 @@ def setUpTrigger():
 
     main_ui.graphicsView.lengthCaliChanged.connect(main_ui.horizontalProfile.updateProfile)
     main_ui.graphicsView.lengthCaliChanged.connect(main_ui.verticalProfile.updateProfile)
+
     main_ui.graphicsView.lengthCaliChanged.connect(main_ui.length_info.UpdateText)
 
     main_ui.captureList.selectImg.connect(main_ui.graphicsView.scene.setImage)

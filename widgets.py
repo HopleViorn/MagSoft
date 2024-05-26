@@ -4,6 +4,11 @@ from PyQt5.Qt import Qt
 import cv2
 import toupcam
 import sys,os
+import copy
+
+def cv_imread(file_path):
+    cv_img=cv2.imdecode(np.fromfile(file_path,dtype=np.uint8),-1)
+    return cv_img
 
 def get_resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
@@ -13,7 +18,9 @@ def get_resource_path(relative_path):
 class ImgView(QtWidgets.QLabel):
     def __init__(self,parent):
         super(ImgView,self).__init__(parent)
-        img = cv2.imread(get_resource_path('res/demo2.png'))
+        path=get_resource_path(os.path.join('res','demo2.png'))
+        img = cv_imread(path)
+        print(path,img.shape)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.setImage(img)
 
@@ -21,7 +28,7 @@ class ImgView(QtWidgets.QLabel):
         self.piximg=QPixmap.fromImage(img)
 
     def setImage(self,img):
-        self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888).scaled(self.size()))
+        self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
         self.update()
 
     def paintEvent(self, event):
@@ -75,31 +82,54 @@ class NativeCanvas(ImgView):
         painter.end()
 
 
+class GraphicCalcThread(QtCore.QThread):
+    finish = QtCore.pyqtSignal(object)
+    def __init__(self,img):
+        super().__init__()
+        self.img=img
+
+    def __del__(self):
+        self.wait()
+
+    def setImg(self,img):
+        self.img=img
+
+    def run(self):
+        img=self.img-variables.base_img
+        img=variables.mag_lut[img[:,:,0]].astype(np.uint8)
+        img=cv2.applyColorMap(img,cv2.COLORMAP_JET)
+        self.finish.emit(img)
 
 import numpy as np
 class Canvas(QtWidgets.QGraphicsScene):
     def __init__(self):
         super(Canvas,self).__init__()
-        img = cv2.imread(get_resource_path('res/demo2.png'))
+        path=get_resource_path(os.path.join('res','demo2.png'))
+        img = cv_imread(path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # img=self.convert_to_grey(img)
-        self.color_img=0
+        img = img
+
+        self.color_img=img
+        self.worker=GraphicCalcThread(copy.deepcopy(self.color_img))
+        self.worker.finish.connect(self.callback)
+        
+        self.callback(img)
         self.setImage(img)
+        
 
     def setQImage(self,img: QImage):
         self.piximg=QPixmap.fromImage(img)
 
-    def Update(self):
-        # img=cv2.LUT(self.color_img[:,:,0],np.array(variables.mag_lut)).astype(np.uint8)
-
-        img=variables.mag_lut[self.color_img[:,:,0]].astype(np.uint8)
-
-        img=cv2.applyColorMap(img,cv2.COLORMAP_JET)
-
+    def callback(self,img):
         self.setSceneRect(0,0,img.shape[1],img.shape[0])
         self.img=img
         self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
         self.update()
+
+    def Update(self):
+        self.worker.setImg(self.color_img)
+
+        self.worker.start()
 
     def setImage(self,img):
         self.color_img=img
@@ -131,15 +161,15 @@ class MainViewer(QtWidgets.QGraphicsView):
         self.onDrawing=0
         self.drawingItem=None
 
-        self.base_img=0
+        variables.base_img=0
 
         self.color_map=cv2.COLORMAP_JET
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
 
     def onInitialize(self):
-        self.base_img=self.scene.color_img
-        self.initializeChanged.emit(np.mean(self.base_img[:,:,0]))
+        variables.base_img=copy.deepcopy(self.scene.color_img)
+        self.initializeChanged.emit(np.mean(variables.base_img[:,:,0]))
 
     def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
         ratio=event.angleDelta().y()
@@ -174,7 +204,7 @@ class MainViewer(QtWidgets.QGraphicsView):
                 l,r,u,d=(proc(rect.left()),proc(rect.right()),proc(rect.top()),proc(rect.bottom()))
                 l,r=min(l,r),max(l,r)
                 u,d=min(u,d),max(u,d)
-                partial_img=(self.scene.color_img-self.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
                 self.selectChanged.emit(partial_img)
 
             elif rect is not None and isinstance(rect,HorizontalLine):
@@ -183,7 +213,7 @@ class MainViewer(QtWidgets.QGraphicsView):
                 l,r,u,d=proc(l),proc(r),proc(u),proc(d)
                 l,r=min(l,r),max(l,r)
                 u,d=min(u,d),max(u,d)
-                partial_img=(self.scene.color_img-self.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
                 self.selectChanged.emit(partial_img)
 
             elif rect is not None and isinstance(rect,VerticalLine):
@@ -193,12 +223,12 @@ class MainViewer(QtWidgets.QGraphicsView):
                 l,r=min(l,r),max(l,r)
                 u,d=min(u,d),max(u,d)
                 print(l,r,u,d)
-                partial_img=(self.scene.color_img-self.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
                 self.selectChanged.emit(partial_img)
 
             elif rect is not None and isinstance(rect,CalibrationRect):
                 l,r,u,d=rect.getRect()
-                partial_img=(self.scene.color_img-self.base_img)[u:d,l:r,:]
+                partial_img=(self.scene.color_img-variables.base_img)[u:d,l:r,:]
                 avg=np.mean(partial_img)
 
                 import main
@@ -232,24 +262,10 @@ from io import BytesIO
 import numpy as np
 import PIL
 
-class AnalysisThread(QtCore.QThread):
-
-    finish = QtCore.pyqtSignal(object)
-
-    def __init__(self):
-        super().__init__()
-
-    def __del__(self):
-        self.wait()
-
-    def run(self):
-        pass
-
 class ProfileViewer(ImgView):
     def __init__(self,parent,axis=0):
         super(ProfileViewer,self).__init__(parent)
         self.axis=axis
-        self.threads=[]
         self.setProfile(None)
 
     def setProfile(self,img):
@@ -266,8 +282,8 @@ class ProfileViewer(ImgView):
         img=variables.mag_lut[img]
 
         plt.figure(figsize=(self.width()/100,self.height()/100))
-        # plt.subplots_adjust(right=0.8)
-        # plt.subplots_adjust(down=0.8)
+        plt.subplots_adjust(right=0.8)
+        plt.subplots_adjust(bottom=0.3)
         maxplot=np.max(img,self.axis)
         minplot=np.min(img,self.axis)
         avgplot=np.mean(img,self.axis)

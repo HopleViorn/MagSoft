@@ -227,12 +227,13 @@ class ToupCamWidget(QWidget):
     def openCamera(self):
         self.hcam = toupcam.Toupcam.Open(self.cur.id)
         if self.hcam:
-            self.res = self.hcam.get_eSize()
+            # self.res = self.hcam.get_eSize()
+            self.res = 0
             self.imgWidth = self.cur.model.res[self.res].width
             self.imgHeight = self.cur.model.res[self.res].height
             with QSignalBlocker(self.cmb_res):
                 self.cmb_res.clear()
-                for i in range(0, self.cur.model.preview):
+                for i in range(0,self.cur.model.preview):
                     self.cmb_res.addItem("{}*{}".format(self.cur.model.res[i].width, self.cur.model.res[i].height))
                 self.cmb_res.setCurrentIndex(self.res)
                 self.cmb_res.setEnabled(True)
@@ -298,7 +299,7 @@ class ToupCamWidget(QWidget):
         except toupcam.HRESULTException:
             pass
         else:
-            image= np.frombuffer(self.pData,np.uint8)
+            image = np.frombuffer(self.pData,np.uint8)
             image=image.reshape((self.imgHeight,self.imgWidth,3))
             self.lbl_video.setImage(image)
             self.lbl_video.update()
