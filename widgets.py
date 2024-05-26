@@ -107,6 +107,7 @@ class GraphicCalcThread(QtCore.QThread):
 
 import numpy as np
 class Canvas(QtWidgets.QGraphicsScene):
+    frameUpdate = QtCore.pyqtSignal()
     def __init__(self):
         super(Canvas,self).__init__()
         path=get_resource_path(os.path.join('res','demo2.png'))
@@ -130,10 +131,10 @@ class Canvas(QtWidgets.QGraphicsScene):
         self.img=img
         self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
         self.update()
+        self.frameUpdate.emit()
 
     def Update(self):
         self.worker.setImg(self.single_img)
-
         self.worker.start()
 
     def setImage(self,img):
@@ -157,6 +158,8 @@ class MainViewer(QtWidgets.QGraphicsView):
     magCaliChanged = QtCore.pyqtSignal()
     lengthCaliChanged = QtCore.pyqtSignal()
     initializeChanged = QtCore.pyqtSignal(object)
+    
+    
 
     def __init__(self,parent):
         super(MainViewer,self).__init__(parent)
@@ -250,7 +253,8 @@ class MainViewer(QtWidgets.QGraphicsView):
                 self.scene.Update()
                 self.magCaliChanged.emit()
             else:
-                self.selectChanged.emit(None)
+                pass
+                # self.selectChanged.emit(None)
         return super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:
@@ -266,10 +270,69 @@ from io import BytesIO
 import numpy as np
 import PIL
 
+mux=QtCore.QMutex()
+
+class ProfileCalcThread(QtCore.QThread):
+    finish = QtCore.pyqtSignal(object)
+    def __init__(self,axis,width,height):
+        super().__init__()
+        self.profile=np.zeros((1,1,1)).astype(np.uint8) 
+        self.axis=axis
+        self.width=width
+        self.height=height
+
+    def __del__(self):
+        self.wait()
+
+    def setNuclear(self,profile,width,height):
+        self.profile=profile
+        self.width=width
+        self.height=height
+
+    def run(self):
+        mux.lock()
+        img=self.profile
+        img=variables.mag_lut[img]
+
+        plt.figure(figsize=(self.width/100,self.height/100))
+        plt.subplots_adjust(right=0.8)
+        plt.subplots_adjust(bottom=0.3)
+        maxplot=np.max(img,self.axis)
+        minplot=np.min(img,self.axis)
+        avgplot=np.mean(img,self.axis)
+
+        l=len(maxplot)
+
+        l1=plt.plot([i*variables.mm_per_pix for i in range(l)],maxplot,label='Maxima')
+        l2=plt.plot([i*variables.mm_per_pix for i in range(l)],minplot,label='Minima')
+        l3=plt.plot([i*variables.mm_per_pix for i in range(l)],avgplot,label='Average')
+        title=['Horizontal','Vertical'][self.axis]
+        plt.title(title+' Profile')
+
+        plt.legend(bbox_to_anchor=(1.02, 0),loc='lower left')
+
+        plt.xlabel('Width (mm)')
+        plt.ylabel('Field (mT)')
+
+        buffer_ = BytesIO()
+        plt.savefig(buffer_,format = 'png')
+
+        buffer_.seek(0)
+        dataPIL = PIL.Image.open(buffer_).convert('RGB')
+        data = np.asarray(dataPIL)
+        self.finish.emit(data)
+        buffer_.close()
+        plt.close()
+        mux.unlock()
+
 class ProfileViewer(ImgView):
     def __init__(self,parent,axis=0):
         super(ProfileViewer,self).__init__(parent)
         self.axis=axis
+
+        self.work=ProfileCalcThread(self.axis,self.width(),self.height())
+        self.work.finish.connect(self.callback)
+        
         self.setProfile(None)
 
     def setProfile(self,img):
@@ -280,8 +343,14 @@ class ProfileViewer(ImgView):
         self.updateProfile()
         return super().resizeEvent(a0)
 
+    def callback(self,img):
+        self.setImage(img)
+
     def updateProfile(self):
-        # img=np.mean(self.profile,axis=2)
+        self.work.setNuclear(self.profile,self.width(),self.height())
+        self.work.start()
+        return
+
         img=self.profile
         img=variables.mag_lut[img]
 

@@ -35,7 +35,9 @@ def setUpTrigger():
     main_ui.calibration_magfiled.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=CalibrationRect()))
 
     main_ui.horizontalProfile.axis=0
+    main_ui.horizontalProfile.work.axis=0
     main_ui.verticalProfile.axis=1
+    main_ui.verticalProfile.work.axis=1
 
     main_ui.graphicsView.selectChanged.connect(main_ui.horizontalProfile.setProfile)
     main_ui.graphicsView.selectChanged.connect(main_ui.verticalProfile.setProfile)
@@ -56,6 +58,9 @@ def setUpTrigger():
     main_ui.initBtn.clicked.connect(main_ui.graphicsView.onInitialize)
 
     main_ui.graphicsView.initializeChanged.connect(main_ui.initializeLabel.UpdateText)
+
+    # main_ui.graphicsView.scene.frameUpdate.connect(main_ui.horizontalProfile.updateProfile)
+    # main_ui.graphicsView.scene.frameUpdate.connect(main_ui.verticalProfile.updateProfile)
 
 
 # sys._excepthook = sys.excepthook 
