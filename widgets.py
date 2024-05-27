@@ -107,7 +107,7 @@ class GraphicCalcThread(QtCore.QThread):
 
 import numpy as np
 class Canvas(QtWidgets.QGraphicsScene):
-    frameUpdate = QtCore.pyqtSignal()
+    frameUpdate = QtCore.pyqtSignal(object)
     def __init__(self):
         super(Canvas,self).__init__()
         path=get_resource_path(os.path.join('res','demo2.png'))
@@ -131,9 +131,10 @@ class Canvas(QtWidgets.QGraphicsScene):
         self.img=img
         self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
         self.update()
-        self.frameUpdate.emit()
+        
 
     def Update(self):
+        self.frameUpdate.emit(self.single_img)
         self.worker.setImg(self.single_img)
         self.worker.start()
 
@@ -149,7 +150,7 @@ class Canvas(QtWidgets.QGraphicsScene):
         return super().mouseMoveEvent(ev)
 
 
-from items import RectArea,CalibrationRect,VerticalLine,HorizontalLine,CalibrationLine
+from items import RectArea,CalibrationRect,VerticalLine,HorizontalLine,CalibrationLine,DynamicRectArea
 import variables
 
 class MainViewer(QtWidgets.QGraphicsView):
@@ -158,8 +159,6 @@ class MainViewer(QtWidgets.QGraphicsView):
     magCaliChanged = QtCore.pyqtSignal()
     lengthCaliChanged = QtCore.pyqtSignal()
     initializeChanged = QtCore.pyqtSignal(object)
-    
-    
 
     def __init__(self,parent):
         super(MainViewer,self).__init__(parent)
@@ -200,6 +199,8 @@ class MainViewer(QtWidgets.QGraphicsView):
                 self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
                 self.setMouseTracking(False)
                 self.onDrawing=0
+                if isinstance(self.drawingItem,CalibrationLine):
+                    self.lengthCaliChanged.emit()
                 if isinstance(self.drawingItem,CalibrationLine):
                     self.lengthCaliChanged.emit()
                 self.drawingItem=None
@@ -264,7 +265,6 @@ class MainViewer(QtWidgets.QGraphicsView):
 
         return super().mouseMoveEvent(event)
 
-
 import matplotlib.pyplot as plt
 from io import BytesIO
 import numpy as np
@@ -290,22 +290,23 @@ class ProfileCalcThread(QtCore.QThread):
         self.height=height
 
     def run(self):
-        mux.lock()
         img=self.profile
         img=variables.mag_lut[img]
-
-        plt.figure(figsize=(self.width/100,self.height/100))
-        plt.subplots_adjust(right=0.8)
-        plt.subplots_adjust(bottom=0.3)
+        buffer_ = BytesIO()
         maxplot=np.max(img,self.axis)
         minplot=np.min(img,self.axis)
         avgplot=np.mean(img,self.axis)
-
         l=len(maxplot)
+        xlist=[i*variables.mm_per_pix for i in range(l)]
 
-        l1=plt.plot([i*variables.mm_per_pix for i in range(l)],maxplot,label='Maxima')
-        l2=plt.plot([i*variables.mm_per_pix for i in range(l)],minplot,label='Minima')
-        l3=plt.plot([i*variables.mm_per_pix for i in range(l)],avgplot,label='Average')
+        mux.lock()
+        plt.figure(figsize=(self.width/100,self.height/100))
+        plt.subplots_adjust(right=0.8)
+        plt.subplots_adjust(bottom=0.3)
+        
+        l1=plt.plot(xlist,maxplot,label='Maxima')
+        l2=plt.plot(xlist,minplot,label='Minima')
+        l3=plt.plot(xlist,avgplot,label='Average')
         title=['Horizontal','Vertical'][self.axis]
         plt.title(title+' Profile')
 
@@ -314,16 +315,15 @@ class ProfileCalcThread(QtCore.QThread):
         plt.xlabel('Width (mm)')
         plt.ylabel('Field (mT)')
 
-        buffer_ = BytesIO()
         plt.savefig(buffer_,format = 'png')
+        plt.close()
+        mux.unlock()
 
         buffer_.seek(0)
         dataPIL = PIL.Image.open(buffer_).convert('RGB')
         data = np.asarray(dataPIL)
-        self.finish.emit(data)
         buffer_.close()
-        plt.close()
-        mux.unlock()
+        self.finish.emit(data)
 
 class ProfileViewer(ImgView):
     def __init__(self,parent,axis=0):
@@ -336,7 +336,7 @@ class ProfileViewer(ImgView):
         self.setProfile(None)
 
     def setProfile(self,img):
-        self.profile=np.zeros((1,1,1)).astype(np.uint8) if img is None else img
+        self.profile=np.zeros((1,1)).astype(np.uint8) if img is None else img
         self.updateProfile()
     
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:

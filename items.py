@@ -5,6 +5,37 @@ from PyQt5.Qt import Qt
 import numpy as np
 import variables
 
+class DynamicRectArea(QtWidgets.QGraphicsRectItem):
+    def __init__(self,x0=0,y0=0,x1=0,y1=0):
+        super(RectArea,self).__init__(x0,y0,x1,y1)
+        self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
+        self.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        self.setVisible(False)
+        self.state=0
+    
+    def onClick(self,pos):
+        if self.state==0:
+            self.x0=pos.x()
+            self.y0=pos.y()
+            self.state=1
+            self.setRect(self.x0,self.y0,0,0)
+            self.setVisible(True)
+            return 1
+        if self.state==1:
+            return 0
+
+    def itemList(self):
+        return [self]
+
+    def onMoving(self,pos):
+        x1,y1=pos.x(),pos.y()
+        w,h=abs(x1-self.x0),abs(y1-self.y0)
+        self.setRect(min(self.x0,x1),min(self.y0,y1),w,h)
+
+
+
+
 class RectArea(QtWidgets.QGraphicsRectItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
         super(RectArea,self).__init__(x0,y0,x1,y1)
