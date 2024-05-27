@@ -263,10 +263,10 @@ class Ui_MainWindow(object):
         self.graphicsView.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.graphicsView.setObjectName("graphicsView")
         self.verticalLayout_6.addWidget(self.graphicsView)
-        self.resolution = QtWidgets.QLabel(self.frame_7)
-        self.resolution.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.resolution.setObjectName("resolution")
-        self.verticalLayout_6.addWidget(self.resolution)
+        self.videoInfo = VideoLabel(self.frame_7)
+        self.videoInfo.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.videoInfo.setObjectName("videoInfo")
+        self.verticalLayout_6.addWidget(self.videoInfo)
         self.horizontalLayout_3.addWidget(self.frame_7)
         self.frame_6 = QtWidgets.QFrame(self.frame_5)
         self.frame_6.setEnabled(True)
@@ -427,7 +427,7 @@ class Ui_MainWindow(object):
         self.groupBox.setTitle(_translate("MainWindow", "Profile"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Measure"))
         self.ToolBox.setTabText(self.ToolBox.indexOf(self.AnalysisPage), _translate("MainWindow", "Analysis"))
-        self.resolution.setText(_translate("MainWindow", "resolution"))
+        self.videoInfo.setText(_translate("MainWindow", "resolution"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Acquire"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Info"))
         self.horizontalProfile.setText(_translate("MainWindow", "Analysis"))
@@ -439,5 +439,5 @@ class Ui_MainWindow(object):
         self.actionNothing_Here.setText(_translate("MainWindow", "Nothing Here"))
         self.actionNothing_Here_2.setText(_translate("MainWindow", "Nothing Here"))
 from toupcamdemo import ToupCamWidget
-from widgets import CaptureList, InitializeLabel, LengthLabel, MagCaliViewer, MainViewer, ProfileViewer
+from widgets import CaptureList, InitializeLabel, LengthLabel, MagCaliViewer, MainViewer, ProfileViewer, VideoLabel
 import res_rc

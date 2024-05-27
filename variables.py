@@ -1,12 +1,25 @@
 import numpy as np
 import pickle
+import cv2
 
 mm_per_pix=1
 rgb_mt=[]
 
 base_img=np.zeros((1,1))
-
 mag_lut=np.array([i for i in range(256)])
+profile_area=None
+
+resolution=(1,1)
+
+def get_line_width():
+    line_coe=360
+    return resolution[1]/line_coe
+
+def get_derivated_img(img):
+    global base_img
+    if base_img.shape != img.shape:
+        base_img=cv2.resize(base_img,(img.shape[1],img.shape[0])).astype(np.uint8)
+    return img-base_img
 
 def update_mag_lut():
     rgb_mt.sort(key=lambda x:x.avg)

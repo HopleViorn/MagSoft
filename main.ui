@@ -577,7 +577,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLabel" name="resolution">
+                  <widget class="VideoLabel" name="videoInfo">
                    <property name="text">
                     <string>resolution</string>
                    </property>
@@ -932,6 +932,11 @@
   </customwidget>
   <customwidget>
    <class>InitializeLabel</class>
+   <extends>QLabel</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>VideoLabel</class>
    <extends>QLabel</extends>
    <header>widgets.h</header>
   </customwidget>

@@ -33,14 +33,11 @@ class DynamicRectArea(QtWidgets.QGraphicsRectItem):
         w,h=abs(x1-self.x0),abs(y1-self.y0)
         self.setRect(min(self.x0,x1),min(self.y0,y1),w,h)
 
-
-
-
 class RectArea(QtWidgets.QGraphicsRectItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
         super(RectArea,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
-        self.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
@@ -61,14 +58,19 @@ class RectArea(QtWidgets.QGraphicsRectItem):
 
     def onMoving(self,pos):
         x1,y1=pos.x(),pos.y()
+        self.x1,self.y1=x1,y1
         w,h=abs(x1-self.x0),abs(y1-self.y0)
         self.setRect(min(self.x0,x1),min(self.y0,y1),w,h)
+
+    def getBox(self):
+        f=lambda x:max(int(x),0)
+        return f(min(self.x0,self.x1)),f(max(self.x0,self.x1)),f(min(self.y0,self.y1)),f(max(self.y0,self.y1))
 
 class LineArea(QtWidgets.QGraphicsLineItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
         super(LineArea,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
-        self.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
         self.setVisible(False)
         self.state=0
     
@@ -90,11 +92,12 @@ class LineArea(QtWidgets.QGraphicsLineItem):
         x1,y1=pos.x(),pos.y()
         self.setLine(self.x0,self.y0,x1,y1)
 
+    
 class HorizontalLine(QtWidgets.QGraphicsLineItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
         super(HorizontalLine,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
-        self.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
@@ -115,14 +118,19 @@ class HorizontalLine(QtWidgets.QGraphicsLineItem):
 
     def onMoving(self,pos):
         self.x1,self.y1=pos.x(),pos.y()
-        self.y1=self.y0
+        self.y0=self.y1
         self.setLine(self.x0,self.y0,self.x1,self.y1)
+
+    def getBox(self):
+        f=lambda x:max(int(x),0)
+        return f(min(self.x0,self.x1)),f(max(self.x0,self.x1)),f(min(self.y0,self.y0+1)),f(max(self.y0,self.y0+1))
+
 
 class VerticalLine(QtWidgets.QGraphicsLineItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
         super(VerticalLine,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
-        self.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
@@ -143,8 +151,11 @@ class VerticalLine(QtWidgets.QGraphicsLineItem):
 
     def onMoving(self,pos):
         self.x1,self.y1=pos.x(),pos.y()
-        self.x1=self.x0
+        self.x0=self.x1
         self.setLine(self.x0,self.y0,self.x1,self.y1)
+    def getBox(self):
+        f=lambda x:max(int(x),0)
+        return f(min(self.x0,self.x0+1)),f(max(self.x0,self.x0+1)),f(min(self.y0,self.y1)),f(max(self.y0,self.y1))
 
 class MeasureLine():
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
@@ -157,10 +168,10 @@ class MeasureLine():
         self.secLine1=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.text=QtWidgets.QGraphicsTextItem('length:{}'.format(0))
         self.text.setDefaultTextColor(Qt.white)
-
-        self.mainLine.setPen(QPen(Qt.white, 2, Qt.DashLine))
-        self.secLine0.setPen(QPen(Qt.white, 2, Qt.DashLine))
-        self.secLine1.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        
+        self.mainLine.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
+        self.secLine0.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
+        self.secLine1.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
 
         self.items=[self.mainLine,self.secLine0,self.secLine1,self.text]
         for item in self.items:
@@ -172,7 +183,6 @@ class MeasureLine():
     def setSegment(self,x0,y0,x1,y1):
         self.mainLine.setLine(x0,y0,x1,y1)
         dv=np.array([y0-y1,x1-x0])
-        
         
         self.text.setPos(x1,y1)
         self.text.setPlainText('{:.3f} mm\n{:.3f} px'.format(np.linalg.norm(dv)*variables.mm_per_pix,np.linalg.norm(dv)))
@@ -213,9 +223,9 @@ class CalibrationLine():
         self.text=QtWidgets.QGraphicsTextItem('length:{}'.format(0))
 
         self.text.setDefaultTextColor(Qt.red)
-        self.mainLine.setPen(QPen(Qt.red, 2, Qt.DashLine))
-        self.secLine0.setPen(QPen(Qt.red, 2, Qt.DashLine))
-        self.secLine1.setPen(QPen(Qt.red, 2, Qt.DashLine))
+        self.mainLine.setPen(QPen(Qt.red, variables.get_line_width(), Qt.DashLine))
+        self.secLine0.setPen(QPen(Qt.red, variables.get_line_width(), Qt.DashLine))
+        self.secLine1.setPen(QPen(Qt.red, variables.get_line_width(), Qt.DashLine))
 
         self.items=[self.mainLine,self.secLine0,self.secLine1,self.text]
         for item in self.items:
@@ -281,7 +291,7 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
 
         # self.rect=QtWidgets.QGraphicsRectItem(0,0,0,0)
-        self.setPen(QPen(Qt.red, 2, Qt.SolidLine))
+        self.setPen(QPen(Qt.red, variables.get_line_width(), Qt.SolidLine))
 
         self.text=QtWidgets.QGraphicsTextItem('Average:')
         self.text.setDefaultTextColor(Qt.red)
@@ -348,11 +358,12 @@ class MeasureAngle():
         self.line0=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.line1=QtWidgets.QGraphicsLineItem(0,0,0,0)
 
-        self.line0.setPen(QPen(Qt.white, 2, Qt.DashLine))
-        self.line1.setPen(QPen(Qt.white, 2, Qt.DashLine))
+        self.line0.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
+        self.line1.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
 
         self.text=QtWidgets.QGraphicsTextItem('angle')
         self.text.setDefaultTextColor(Qt.white)
+        
         self.items=[self.line0,self.line1,self.text]
         for item in self.items:
             item.setVisible(False)

@@ -47,16 +47,20 @@ def update_param():
     main_ui.graphicsView.scene.Update()
     main_ui.graphicsView.initializeChanged.emit(np.mean(variables.base_img))
 
-
+def draw_profie(drawType):
+    item=drawType()
+    main_ui.graphicsView.startDraw(drawItem=item,clearItem=variables.profile_area)
+    variables.profile_area=item
 
 def setUpTrigger():
     main_ui.toupcamwidget.lbl_video=main_ui.graphicsView.scene
     main_ui.toupcamwidget.btn_snap=main_ui.snap
     main_ui.toupcamwidget.btn_snap.clicked.connect(main_ui.toupcamwidget.onBtnSnap)
 
-    main_ui.measure_square.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=RectArea()))
-    main_ui.vertical_line.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=VerticalLine()))
-    main_ui.horizontal_line.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=HorizontalLine()))
+    main_ui.measure_square.clicked.connect(lambda: draw_profie(RectArea))
+    main_ui.vertical_line.clicked.connect(lambda: draw_profie(VerticalLine))
+    main_ui.horizontal_line.clicked.connect(lambda: draw_profie(HorizontalLine))
+
     main_ui.measure_length.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureLine()))
     main_ui.measure_angle.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureAngle()))
     main_ui.calibration_length.clicked.connect(lambda: (cali_len.init(),main_ui.graphicsView.startDraw(drawItem=cali_len)))
@@ -96,6 +100,8 @@ def setUpTrigger():
 
     main_ui.loadCalibration.clicked.connect(loadCalibrationFile)
     main_ui.saveCalibration.clicked.connect(saveCalibrationFile)
+
+    main_ui.graphicsView.scene.frameUpdate.connect(main_ui.videoInfo.UpdateText)
 
 if __name__ == '__main__':
 

@@ -83,7 +83,7 @@ class NativeCanvas(ImgView):
 
 
 class GraphicCalcThread(QtCore.QThread):
-    finish = QtCore.pyqtSignal(object)
+    finish = QtCore.pyqtSignal(object,object)
     def __init__(self,img):
         super().__init__()
         self.img=img
@@ -95,15 +95,10 @@ class GraphicCalcThread(QtCore.QThread):
         self.img=img
 
     def run(self):
-        if variables.base_img.shape != self.img.shape:
-            variables.base_img=cv2.resize(variables.base_img,(self.img.shape[1],self.img.shape[0])).astype(np.uint8)
-            print(variables.base_img.shape)
-            print(self.img.shape)
-        img=self.img-variables.base_img
-
-        img=variables.mag_lut[img].astype(np.uint8)
-        img=cv2.applyColorMap(img,cv2.COLORMAP_JET)
-        self.finish.emit(img)
+        der=variables.get_derivated_img(self.img)
+        mag=variables.mag_lut[der].astype(np.uint8)
+        img=cv2.applyColorMap(mag,cv2.COLORMAP_JET)
+        self.finish.emit(img,der)
 
 import numpy as np
 class Canvas(QtWidgets.QGraphicsScene):
@@ -122,24 +117,24 @@ class Canvas(QtWidgets.QGraphicsScene):
         # self.worker.start()
         self.setImage(img)
         
-
     def setQImage(self,img: QImage):
         self.piximg=QPixmap.fromImage(img)
 
-    def callback(self,img):
+    def callback(self,img,der):
         self.setSceneRect(0,0,img.shape[1],img.shape[0])
+        self.frameUpdate.emit(der)
         self.img=img
         self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
         self.update()
         
 
     def Update(self):
-        self.frameUpdate.emit(self.single_img)
         self.worker.setImg(self.single_img)
         self.worker.start()
 
     def setImage(self,img):
         self.single_img=img
+        variables.resolution=(img.shape[1],img.shape[0])
         self.Update()
 
     def drawBackground(self, painter: QPainter, rect: QtCore.QRectF) -> None:
@@ -183,27 +178,31 @@ class MainViewer(QtWidgets.QGraphicsView):
         self.scale(ratio,ratio)
         return super().wheelEvent(event)
     
-    def startDraw(self,drawItem,addItem=True):
+    def startDraw(self,drawItem,clearItem=None):
         self.setMouseTracking(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
         self.onDrawing=1
         self.drawingItem=drawItem
-        if addItem:
-            for item in self.drawingItem.itemList():
-                self.scene.addItem(item)
+
+        if clearItem is not None:
+            for item in clearItem.itemList():    
+                self.scene.removeItem(item)
+        
+        for item in self.drawingItem.itemList():
+            self.scene.addItem(item)
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         if self.onDrawing==1:
             pos=self.mapToScene(event.localPos().toPoint())
-            if self.drawingItem.onClick(pos)==0:
-                self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-                self.setMouseTracking(False)
-                self.onDrawing=0
-                if isinstance(self.drawingItem,CalibrationLine):
-                    self.lengthCaliChanged.emit()
-                if isinstance(self.drawingItem,CalibrationLine):
-                    self.lengthCaliChanged.emit()
-                self.drawingItem=None
+            if pos.x()>0 and pos.y()>0 and pos.x() <= variables.resolution[0] and pos.y() <= variables.resolution[1]:
+                if self.drawingItem.onClick(pos)==0:
+                    self.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+                    self.setMouseTracking(False)
+                    self.onDrawing=0
+                    if isinstance(self.drawingItem,CalibrationLine):
+                        self.lengthCaliChanged.emit()
+                    self.drawingItem=None
+                    self.scene.frameUpdate.emit(self.scene.single_img)
         else:#Select
             rect=self.scene.itemAt(self.mapToScene(event.localPos().toPoint()),QtGui.QTransform())
             if rect is not None and isinstance(rect,RectArea):
@@ -255,7 +254,6 @@ class MainViewer(QtWidgets.QGraphicsView):
                 self.magCaliChanged.emit()
             else:
                 pass
-                # self.selectChanged.emit(None)
         return super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:
@@ -276,7 +274,7 @@ class ProfileCalcThread(QtCore.QThread):
     finish = QtCore.pyqtSignal(object)
     def __init__(self,axis,width,height):
         super().__init__()
-        self.profile=np.zeros((1,1,1)).astype(np.uint8) 
+        self.profile=np.zeros((1,1)).astype(np.uint8) 
         self.axis=axis
         self.width=width
         self.height=height
@@ -291,7 +289,7 @@ class ProfileCalcThread(QtCore.QThread):
 
     def run(self):
         img=self.profile
-        img=variables.mag_lut[img]
+        # img=variables.mag_lut[img]
         buffer_ = BytesIO()
         maxplot=np.max(img,self.axis)
         minplot=np.min(img,self.axis)
@@ -347,42 +345,15 @@ class ProfileViewer(ImgView):
         self.setImage(img)
 
     def updateProfile(self):
-        self.work.setNuclear(self.profile,self.width(),self.height())
+        if variables.profile_area is not None:
+            l,r,u,d=variables.profile_area.getBox()
+            if r>l and d>u:
+                self.work.setNuclear(self.profile[u:d,l:r],self.width(),self.height())
+            else:
+                self.work.setNuclear(np.zeros((1,1)).astype(np.uint8),self.width(),self.height())
+        else:
+            self.work.setNuclear(np.zeros((1,1)).astype(np.uint8),self.width(),self.height())
         self.work.start()
-        return
-
-        img=self.profile
-        img=variables.mag_lut[img]
-
-        plt.figure(figsize=(self.width()/100,self.height()/100))
-        plt.subplots_adjust(right=0.8)
-        plt.subplots_adjust(bottom=0.3)
-        maxplot=np.max(img,self.axis)
-        minplot=np.min(img,self.axis)
-        avgplot=np.mean(img,self.axis)
-
-        l=len(maxplot)
-
-        l1=plt.plot([i*variables.mm_per_pix for i in range(l)],maxplot,label='Maxima')
-        l2=plt.plot([i*variables.mm_per_pix for i in range(l)],minplot,label='Minima')
-        l3=plt.plot([i*variables.mm_per_pix for i in range(l)],avgplot,label='Average')
-        title=['Horizontal','Vertical'][self.axis]
-        plt.title(title+' Profile')
-
-        plt.legend(bbox_to_anchor=(1.02, 0),loc='lower left')
-
-        plt.xlabel('Width (mm)')
-        plt.ylabel('Field (mT)')
-
-        buffer_ = BytesIO()
-        plt.savefig(buffer_,format = 'png')
-
-        buffer_.seek(0)
-        dataPIL = PIL.Image.open(buffer_).convert('RGB')
-        data = np.asarray(dataPIL)
-        self.setImage(data)
-        buffer_.close()
-        plt.close()
 
 class MagCaliViewer(ImgView):
     def __init__(self,parent,axis=0):
@@ -463,4 +434,14 @@ class InitializeLabel(QtWidgets.QLabel):
 
     def UpdateText(self,avg):
         self.setText('Initialized.\n Average: {:.2f}.'.format(avg))
+        self.repaint()
+
+
+class VideoLabel(QtWidgets.QLabel):
+    def __init__(self,parent):
+        super(VideoLabel,self).__init__(parent)
+        self.UpdateText()
+
+    def UpdateText(self):
+        self.setText('{} × {} px'.format(variables.resolution[0],variables.resolution[1]))
         self.repaint()
