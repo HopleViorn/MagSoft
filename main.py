@@ -95,13 +95,14 @@ def setUpTrigger():
 
     main_ui.graphicsView.initializeChanged.connect(main_ui.initializeLabel.UpdateText)
 
-    # main_ui.graphicsView.scene.frameUpdate.connect(main_ui.horizontalProfile.updateProfile)
-    # main_ui.graphicsView.scene.frameUpdate.connect(main_ui.verticalProfile.updateProfile)
-
     main_ui.loadCalibration.clicked.connect(loadCalibrationFile)
     main_ui.saveCalibration.clicked.connect(saveCalibrationFile)
 
     main_ui.graphicsView.scene.frameUpdate.connect(main_ui.videoInfo.UpdateText)
+
+    main_ui.profileTab.currentChanged.connect(variables.setCurrentTab)
+    main_ui.profileTab.currentChanged.connect(main_ui.verticalProfile.updateProfile)
+    main_ui.profileTab.currentChanged.connect(main_ui.horizontalProfile.updateProfile)
 
 if __name__ == '__main__':
 

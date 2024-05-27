@@ -11,6 +11,12 @@ profile_area=None
 
 resolution=(1,1)
 
+currentTab=1
+
+def setCurrentTab(tab):
+    global currentTab
+    currentTab=tab
+
 def get_line_width():
     line_coe=360
     return resolution[1]/line_coe

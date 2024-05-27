@@ -353,7 +353,8 @@ class ProfileViewer(ImgView):
                 self.work.setNuclear(np.zeros((1,1)).astype(np.uint8),self.width(),self.height())
         else:
             self.work.setNuclear(np.zeros((1,1)).astype(np.uint8),self.width(),self.height())
-        self.work.start()
+        if variables.currentTab==self.axis:
+            self.work.start()
 
 class MagCaliViewer(ImgView):
     def __init__(self,parent,axis=0):

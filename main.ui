@@ -804,7 +804,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QTabWidget" name="tabWidget">
+            <widget class="QTabWidget" name="profileTab">
              <property name="minimumSize">
               <size>
                <width>0</width>
