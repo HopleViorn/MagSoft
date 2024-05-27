@@ -10,7 +10,7 @@ class DynamicRectArea(QtWidgets.QGraphicsRectItem):
         super(RectArea,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.white, 2, Qt.DashLine))
-        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
     
@@ -38,7 +38,7 @@ class RectArea(QtWidgets.QGraphicsRectItem):
         super(RectArea,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
-        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
     
@@ -98,7 +98,7 @@ class HorizontalLine(QtWidgets.QGraphicsLineItem):
         super(HorizontalLine,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
-        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
     
@@ -131,7 +131,7 @@ class VerticalLine(QtWidgets.QGraphicsLineItem):
         super(VerticalLine,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
-        self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setVisible(False)
         self.state=0
     
@@ -363,7 +363,7 @@ class MeasureAngle():
 
         self.text=QtWidgets.QGraphicsTextItem('angle')
         self.text.setDefaultTextColor(Qt.white)
-        
+
         self.items=[self.line0,self.line1,self.text]
         for item in self.items:
             item.setVisible(False)
