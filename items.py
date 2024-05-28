@@ -247,7 +247,7 @@ class CalibrationLine():
         dv=np.array([y0-y1,x1-x0])
         self.text.setPos(x1,y1)
         
-        self.text.setPlainText('--- mm\n{:.3f} px'.format(np.linalg.norm(dv)))
+        self.text.setPlainText('{:.3f} px'.format(np.linalg.norm(dv)))
 
         if np.linalg.norm(dv)>0:
             dv=dv/np.linalg.norm(dv)*self.width
@@ -267,9 +267,9 @@ class CalibrationLine():
         if self.state==1:
             self.x1,self.y1=pos.x(),pos.y()
             l=np.linalg.norm(np.array([self.y0-self.y1,self.x1-self.x0]))
-            print(l)
-            variables.mm_per_pix=self.getDouble()/l
-            self.text.setPlainText('{:.3f} mm\n{:.3f} px'.format(l*variables.mm_per_pix,l))
+            # variables.mm_per_pix=self.getDouble()/l
+            variables.add_length_point(l,self.getDouble())
+            # self.text.setPlainText('{:.3f} mm\n{:.3f} px'.format(l*variables.mm_per_pix,l))
             return 0
 
     def getDouble(self):
@@ -304,6 +304,13 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
             item.setVisible(False)
 
         self.state=0
+        
+    def init(self):
+        for item in self.items:
+            item.setVisible(False)
+
+        self.setSegment(0,0,0,0)
+        self.state=0
 
     def getRect(self):
         l,r=min(self.x0,self.x1),max(self.x0,self.x1)
@@ -334,6 +341,12 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
             self.y1=pos.y()
             return 0
 
+    def getDouble(self):
+        from main import main_ui
+        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Magfield Strength (mT):", 0, 0, 100000, 2)
+        if okPressed:
+            return d
+    
     def itemList(self):
         return self.items
 

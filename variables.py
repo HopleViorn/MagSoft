@@ -1,12 +1,34 @@
 import numpy as np
 import pickle
 import cv2
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 mm_per_pix=1
+
+length_cali_model=None
+length_cali_array=np.zeros((0,2))
+def add_length_point(pix,l):
+    if l is None:
+        l=0
+    global length_cali_model
+    n_row=length_cali_model.rowCount()
+    length_cali_model.setItem(n_row,0, QtGui.QStandardItem('{:.4f}'.format(pix)))
+    length_cali_model.setItem(n_row,1, QtGui.QStandardItem('{:.4f}'.format(l)))
+
+mag_cali_model=None
+mag_cali_array=np.zeros((0,2))
+def add_mag_point(pix,l):
+    global mag_cali_model
+    n_row=mag_cali_model.rowCount()
+    mag_cali_model.setItem(n_row,0, QtGui.QStandardItem('{:.4f}'.format(pix)))
+    mag_cali_model.setItem(n_row,1, QtGui.QStandardItem('{:.4f}'.format(l)))
+
 rgb_mt=[]
 
 base_img=np.zeros((1,1))
+
 mag_lut=np.array([i for i in range(256)])
+
 profile_area=None
 
 resolution=(1,1)
@@ -53,5 +75,3 @@ def load_from_file(file_path):
     file=open(file_path,'rb')
     content=pickle.load(file)
     mm_per_pix,base_img,mag_lut=content
-    print(mm_per_pix)
-

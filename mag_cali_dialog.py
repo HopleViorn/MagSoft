@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'MagCaliDialog.ui'
+# Form implementation generated from reading ui file 'mag_cali_dialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -14,28 +14,40 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(400, 380)
-        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(40, 340, 341, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
+        Dialog.resize(658, 325)
         self.mag_info = MagCaliViewer(Dialog)
-        self.mag_info.setGeometry(QtCore.QRect(60, 10, 241, 249))
+        self.mag_info.setGeometry(QtCore.QRect(320, 30, 311, 241))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(8)
         sizePolicy.setHeightForWidth(self.mag_info.sizePolicy().hasHeightForWidth())
         self.mag_info.setSizePolicy(sizePolicy)
         self.mag_info.setObjectName("mag_info")
+        self.magTable = CurveTable(Dialog)
+        self.magTable.setGeometry(QtCore.QRect(20, 20, 271, 251))
+        self.magTable.setObjectName("magTable")
+        self.OK = QtWidgets.QPushButton(Dialog)
+        self.OK.setGeometry(QtCore.QRect(300, 280, 341, 31))
+        self.OK.setIconSize(QtCore.QSize(30, 30))
+        self.OK.setObjectName("OK")
+        self.calibration_mag = QtWidgets.QPushButton(Dialog)
+        self.calibration_mag.setGeometry(QtCore.QRect(20, 280, 121, 31))
+        self.calibration_mag.setIconSize(QtCore.QSize(30, 30))
+        self.calibration_mag.setObjectName("calibration_mag")
+        self.deleteButton = QtWidgets.QPushButton(Dialog)
+        self.deleteButton.setGeometry(QtCore.QRect(150, 280, 141, 31))
+        self.deleteButton.setIconSize(QtCore.QSize(30, 30))
+        self.deleteButton.setObjectName("deleteButton")
 
         self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(Dialog.accept) # type: ignore
-        self.buttonBox.rejected.connect(Dialog.reject) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.mag_info.setText(_translate("Dialog", "mag_info"))
-from widgets import MagCaliViewer
+        self.OK.setText(_translate("Dialog", "OK"))
+        self.calibration_mag.setText(_translate("Dialog", "Add"))
+        self.deleteButton.setText(_translate("Dialog", "Delete"))
+from widgets import CurveTable, MagCaliViewer
+import res_rc

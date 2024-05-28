@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1534</width>
+    <width>1730</width>
     <height>966</height>
    </rect>
   </property>
@@ -120,57 +120,11 @@
               <attribute name="title">
                <string>Calibration</string>
               </attribute>
-              <widget class="QPushButton" name="calibration_length">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>210</y>
-                 <width>251</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string> Length  Calibration</string>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/icons/icons8-drafting-compass-100.png</normaloff>:/icons/icons/icons8-drafting-compass-100.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
-              <widget class="QPushButton" name="calibration_magfiled">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>300</y>
-                 <width>251</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string> Magnetic Field Calibration</string>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/icons/icons8-drafting-compass-100.png</normaloff>:/icons/icons/icons8-drafting-compass-100.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
               <widget class="QPushButton" name="initBtn">
                <property name="geometry">
                 <rect>
                  <x>10</x>
-                 <y>110</y>
+                 <y>60</y>
                  <width>251</width>
                  <height>41</height>
                 </rect>
@@ -192,8 +146,8 @@
               <widget class="LengthLabel" name="length_info">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
-                 <y>260</y>
+                 <x>10</x>
+                 <y>500</y>
                  <width>241</width>
                  <height>27</height>
                 </rect>
@@ -208,33 +162,14 @@
                 <string>Length Not Calibrated</string>
                </property>
               </widget>
-              <widget class="MagCaliViewer" name="mag_info">
-               <property name="geometry">
-                <rect>
-                 <x>20</x>
-                 <y>350</y>
-                 <width>241</width>
-                 <height>249</height>
-                </rect>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>8</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>mag_info</string>
-               </property>
-              </widget>
               <widget class="InitializeLabel" name="initializeLabel">
                <property name="enabled">
                 <bool>true</bool>
                </property>
                <property name="geometry">
                 <rect>
-                 <x>10</x>
-                 <y>140</y>
+                 <x>0</x>
+                 <y>460</y>
                  <width>251</width>
                  <height>51</height>
                 </rect>
@@ -276,6 +211,52 @@
                </property>
                <property name="text">
                 <string>Save Calibration</string>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="setupLength">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>160</y>
+                 <width>251</width>
+                 <height>41</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Setup Length</string>
+               </property>
+               <property name="icon">
+                <iconset resource="res.qrc">
+                 <normaloff>:/icons/icons/icons8-analysis-100.png</normaloff>:/icons/icons/icons8-analysis-100.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="setupMag">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>210</y>
+                 <width>251</width>
+                 <height>41</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Setup Mag</string>
+               </property>
+               <property name="icon">
+                <iconset resource="res.qrc">
+                 <normaloff>:/icons/icons/icons8-analysis-100.png</normaloff>:/icons/icons/icons8-analysis-100.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -799,7 +780,21 @@
               <property name="title">
                <string>Info</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8"/>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <widget class="MagCaliViewer" name="mag_info">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>8</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>mag_info</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </widget>
            </item>
@@ -900,6 +895,11 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>MagCaliViewer</class>
+   <extends>QLabel</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
    <class>ToupCamWidget</class>
    <extends>QWidget</extends>
    <header>toupcamdemo.h</header>
@@ -918,11 +918,6 @@
   <customwidget>
    <class>CaptureList</class>
    <extends>QListView</extends>
-   <header>widgets.h</header>
-  </customwidget>
-  <customwidget>
-   <class>MagCaliViewer</class>
-   <extends>QLabel</extends>
    <header>widgets.h</header>
   </customwidget>
   <customwidget>
