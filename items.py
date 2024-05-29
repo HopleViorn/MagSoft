@@ -168,6 +168,9 @@ class MeasureLine():
         self.secLine1=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.text=QtWidgets.QGraphicsTextItem('length:{}'.format(0))
         self.text.setDefaultTextColor(Qt.white)
+        font = QtGui.QFont()
+        font.setPointSize(variables.get_font_width())
+        self.text.setFont(font)
         
         self.mainLine.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
         self.secLine0.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
@@ -224,6 +227,10 @@ class CalibrationLine():
         self.text=QtWidgets.QGraphicsTextItem('length:{}'.format(0))
 
         self.text.setDefaultTextColor(Qt.red)
+        font = QtGui.QFont()
+        font.setPointSize(variables.get_font_width())
+        self.text.setFont(font)
+
         self.mainLine.setPen(QPen(Qt.red, variables.get_line_width(), Qt.DashLine))
         self.secLine0.setPen(QPen(Qt.red, variables.get_line_width(), Qt.DashLine))
         self.secLine1.setPen(QPen(Qt.red, variables.get_line_width(), Qt.DashLine))
@@ -312,6 +319,11 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
         self.text=QtWidgets.QGraphicsTextItem('Average:')
         self.text.setPos(max(self.x0,self.x1),min(self.y0,self.y1))
         self.text.setDefaultTextColor(Qt.red)
+
+        font = QtGui.QFont()
+        font.setPointSize(variables.get_font_width())
+        self.text.setFont(font)
+        
         self.profile=np.zeros((1,1))
         self.avg=0
 
@@ -399,6 +411,9 @@ class MeasureAngle():
 
         self.text=QtWidgets.QGraphicsTextItem('angle')
         self.text.setDefaultTextColor(Qt.white)
+        font = QtGui.QFont()
+        font.setPointSize(variables.get_font_width())
+        self.text.setFont(font)
 
         self.items=[self.line0,self.line1,self.text]
         for item in self.items:

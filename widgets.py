@@ -163,6 +163,7 @@ class MainViewer(QtWidgets.QGraphicsView):
         self.move(0,0)
         self.onDrawing=0
         self.drawingItem=None
+        self.measureItems=[]
 
         self.color_map=cv2.COLORMAP_JET
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
@@ -178,15 +179,29 @@ class MainViewer(QtWidgets.QGraphicsView):
         ratio=ratio/1200+1
         self.scale(ratio,ratio)
         return super().wheelEvent(event)
+
+    def clearItem(self,clearItem):
+        for item in clearItem.itemList():    
+            self.scene.removeItem(item)
+
+    def clearAll(self):
+        for ss in self.measureItems:
+            for item in ss.itemList():    
+                self.scene.removeItem(item)
+        self.measureItems.clear()
+
     
-    def startDraw(self,drawItem,clearItem=None):
+    def startDraw(self,drawItem,clearItem=None,isMeasure=False):
         self.setMouseTracking(True)
         self.setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
         self.onDrawing=1
         self.drawingItem=drawItem
 
+        if isMeasure:
+            self.measureItems.append(drawItem)
+
         if clearItem is not None:
-            for item in clearItem.itemList():    
+            for item in clearItem.itemList():
                 self.scene.removeItem(item)
         
         for item in self.drawingItem.itemList():
@@ -209,57 +224,7 @@ class MainViewer(QtWidgets.QGraphicsView):
                     self.drawingItem=None
                     self.drawDone.emit()
                     self.scene.frameUpdate.emit(variables.get_derivated_img(self.scene.single_img))
-        # else:#Select
-        #     rect=self.scene.itemAt(self.mapToScene(event.localPos().toPoint()),QtGui.QTransform())
-        #     if rect is not None and isinstance(rect,RectArea):
-        #         rect=rect.rect()
-        #         proc=lambda x: max(int(x),0)
-        #         l,r,u,d=(proc(rect.left()),proc(rect.right()),proc(rect.top()),proc(rect.bottom()))
-        #         l,r=min(l,r),max(l,r)
-        #         u,d=min(u,d),max(u,d)
-        #         partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
-        #         self.selectChanged.emit(partial_img)
 
-        #     elif rect is not None and isinstance(rect,HorizontalLine):
-        #         proc=lambda x: max(int(x),0)
-        #         l,r,u,d=rect.x0,rect.x1,rect.y0,rect.y0+1
-        #         l,r,u,d=proc(l),proc(r),proc(u),proc(d)
-        #         l,r=min(l,r),max(l,r)
-        #         u,d=min(u,d),max(u,d)
-        #         partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
-        #         self.selectChanged.emit(partial_img)
-
-        #     elif rect is not None and isinstance(rect,VerticalLine):
-        #         proc=lambda x: max(int(x),0)
-        #         l,r,u,d=rect.x0,rect.x0+1,rect.y0,rect.y1
-        #         l,r,u,d=proc(l),proc(r),proc(u),proc(d)
-        #         l,r=min(l,r),max(l,r)
-        #         u,d=min(u,d),max(u,d)
-        #         print(l,r,u,d)
-        #         partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
-        #         self.selectChanged.emit(partial_img)
-
-        #     elif rect is not None and isinstance(rect,CalibrationRect):
-        #         l,r,u,d=rect.getRect()
-        #         partial_img=(self.scene.single_img-variables.base_img)[u:d,l:r]
-        #         avg=np.mean(partial_img)
-
-        #         import main
-        #         d, okPressed = QtWidgets.QInputDialog.getDouble(main.main_ui, "Calibration","Magnetic Density (mT):",rect.md, 0, 100000, 2)
-        #         if okPressed:
-        #             rect.md=d
-        #         else: md=rect.md
-
-        #         rect.setText(avg,rect.md)
-
-        #         if rect not in variables.rgb_mt:
-        #             variables.rgb_mt.append(rect)
-        #         variables.update_mag_lut()
-
-        #         self.scene.Update()
-        #         self.magCaliChanged.emit()
-        #     else:
-        #         pass
         return super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:

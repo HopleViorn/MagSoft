@@ -70,6 +70,10 @@ def get_line_width():
     line_coe=360
     return resolution[1]/line_coe
 
+def get_font_width():
+    font_coe=60
+    return resolution[1]/font_coe
+
 def get_derivated_img(img):
     global base_img
     if base_img.shape != img.shape:

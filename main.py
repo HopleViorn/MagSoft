@@ -76,8 +76,8 @@ def setUpTrigger():
     main_ui.vertical_line.clicked.connect(lambda: draw_profie(VerticalLine))
     main_ui.horizontal_line.clicked.connect(lambda: draw_profie(HorizontalLine))
 
-    main_ui.measure_length.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureLine()))
-    main_ui.measure_angle.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureAngle()))
+    main_ui.measure_length.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureLine(),isMeasure=True))
+    main_ui.measure_angle.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureAngle(),isMeasure=True))
     
     lengthcali_ui.calibration_length.clicked.connect(lambda: (cali_len.init(),main_ui.graphicsView.startDraw(drawItem=cali_len)))
     magcali_ui.calibration_mag.clicked.connect(lambda: (cali_mag.init(),main_ui.graphicsView.startDraw(drawItem=cali_mag)))
@@ -131,8 +131,8 @@ def setUpTrigger():
 
     main_ui.graphicsView.scene.frameUpdate.connect(cali_mag.setProfile)
 
-    # main_ui.mainExit.connect(lambda:magcali_ui.hide())
-    # main_ui.mainExit.connect(lambda:lengthcali_ui.hide())
+    main_ui.clearAll.clicked.connect(main_ui.graphicsView.clearAll)
+
 
 
 if __name__ == '__main__':
