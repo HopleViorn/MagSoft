@@ -45,6 +45,8 @@ def add_length_point(pix,l):
 mag_cali_model=None
 mag_cali_array=np.zeros((0,2))
 def add_mag_point(pix,s):
+    if s is None:
+        s=0
     global mag_cali_model
     n_row=mag_cali_model.rowCount()
     mag_cali_model.setItem(n_row,0, QtGui.QStandardItem('{:.4f}'.format(pix)))
@@ -57,6 +59,8 @@ base_img=np.zeros((1,1))
 mag_lut=np.array([i for i in range(256)])
 
 profile_area=None
+cali_len=None
+cali_mag=None
 
 resolution=(1,1)
 

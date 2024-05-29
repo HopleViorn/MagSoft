@@ -67,6 +67,27 @@ def draw_profie(drawType):
     main_ui.graphicsView.startDraw(drawItem=item,clearItem=variables.profile_area)
     variables.profile_area=item
 
+def draw_cali_mag():
+    item=CalibrationRect()
+    main_ui.graphicsView.scene.Update()
+    main_ui.graphicsView.scene.frameUpdate.connect(item.setProfile)
+    main_ui.graphicsView.startDraw(drawItem=item,clearItem=variables.cali_mag)
+    variables.cali_mag=item
+
+def draw_cali_len():
+    item=CalibrationLine()
+    main_ui.graphicsView.startDraw(drawItem=item,clearItem=variables.cali_len)
+    variables.cali_len=item
+
+def delete_profile():
+    if variables.profile_area is not None:
+        main_ui.graphicsView.clearItem(variables.profile_area)
+        variables.profile_area=None
+
+def delete_cali():
+    cali_len=CalibrationLine()
+    cali_mag=CalibrationRect()
+
 def setUpTrigger():
     main_ui.toupcamwidget.lbl_video=main_ui.graphicsView.scene
     main_ui.toupcamwidget.btn_snap=main_ui.snap
@@ -79,8 +100,10 @@ def setUpTrigger():
     main_ui.measure_length.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureLine(),isMeasure=True))
     main_ui.measure_angle.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureAngle(),isMeasure=True))
     
-    lengthcali_ui.calibration_length.clicked.connect(lambda: (cali_len.init(),main_ui.graphicsView.startDraw(drawItem=cali_len)))
-    magcali_ui.calibration_mag.clicked.connect(lambda: (cali_mag.init(),main_ui.graphicsView.startDraw(drawItem=cali_mag)))
+    # lengthcali_ui.calibration_length.clicked.connect(lambda: (cali_len.init(),main_ui.graphicsView.startDraw(drawItem=cali_len)))
+    # magcali_ui.calibration_mag.clicked.connect(lambda: (cali_mag.init(),main_ui.graphicsView.startDraw(drawItem=cali_mag)))
+    lengthcali_ui.calibration_length.clicked.connect(draw_cali_len)
+    magcali_ui.calibration_mag.clicked.connect(draw_cali_mag)
 
     main_ui.horizontalProfile.axis=0
     main_ui.horizontalProfile.work.axis=0
@@ -129,11 +152,11 @@ def setUpTrigger():
     magcali_ui.calibration_mag.clicked.connect(lambda:magcali_ui.hide())
     magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
 
-    main_ui.graphicsView.scene.frameUpdate.connect(cali_mag.setProfile)
+    
 
     main_ui.clearAll.clicked.connect(main_ui.graphicsView.clearAll)
-
-
+    main_ui.clearAll.clicked.connect(delete_profile)
+    main_ui.graphicsView.scene.resolutionChanged.connect(main_ui.graphicsView.clearAll)
 
 if __name__ == '__main__':
 
@@ -149,8 +172,7 @@ if __name__ == '__main__':
     magcali_ui=MagDialog()
     lengthcali_ui=LengthDialog()
 
-    cali_len=CalibrationLine()
-    cali_mag=CalibrationRect()
+
 
     lengthcali_ui.setWindowIcon(main_ui.windowIcon())
     lengthcali_ui.setWindowTitle('Length Calibration')

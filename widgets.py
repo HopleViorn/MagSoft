@@ -103,6 +103,7 @@ class GraphicCalcThread(QtCore.QThread):
 import numpy as np
 class Canvas(QtWidgets.QGraphicsScene):
     frameUpdate = QtCore.pyqtSignal(object)
+    resolutionChanged = QtCore.pyqtSignal(object)
     def __init__(self):
         super(Canvas,self).__init__()
         path=get_resource_path(os.path.join('res','demo2.png'))
@@ -114,7 +115,6 @@ class Canvas(QtWidgets.QGraphicsScene):
         self.single_img=img
         self.worker=GraphicCalcThread(copy.deepcopy(self.single_img))
         self.worker.finish.connect(self.callback)
-        # self.worker.start()
         self.setImage(img)
         
     def setQImage(self,img: QImage):
@@ -134,7 +134,12 @@ class Canvas(QtWidgets.QGraphicsScene):
 
     def setImage(self,img):
         self.single_img=img
-        variables.resolution=(img.shape[1],img.shape[0])
+        this_resolution=(img.shape[1],img.shape[0])
+
+        if variables.resolution != this_resolution:
+            self.resolutionChanged.emit(this_resolution)
+        variables.resolution=this_resolution
+
         self.Update()
 
     def drawBackground(self, painter: QPainter, rect: QtCore.QRectF) -> None:

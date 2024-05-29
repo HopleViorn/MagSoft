@@ -255,7 +255,7 @@ class CalibrationLine():
         dv=np.array([y0-y1,x1-x0])
         self.text.setPos(x1,y1)
         
-        self.text.setPlainText('{:.3f} px'.format(np.linalg.norm(dv)))
+        self.text.setPlainText('{:.4f} px'.format(np.linalg.norm(dv)))
 
         if np.linalg.norm(dv)>0:
             dv=dv/np.linalg.norm(dv)*self.width
@@ -323,7 +323,7 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
         font = QtGui.QFont()
         font.setPointSize(variables.get_font_width())
         self.text.setFont(font)
-        
+
         self.profile=np.zeros((1,1))
         self.avg=0
 
