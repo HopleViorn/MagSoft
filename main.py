@@ -27,10 +27,16 @@ class MagDialog(QDialog, MagUI):
     def __init__(self):
         super(MagDialog,self).__init__()
         self.setupUi(self)
+
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        delete_cali()
+        
 class LengthDialog(QDialog, lengthUI):
     def __init__(self):
         super(LengthDialog,self).__init__()
         self.setupUi(self)
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        delete_cali()
 
 main_ui=None
 
@@ -85,8 +91,12 @@ def delete_profile():
         variables.profile_area=None
 
 def delete_cali():
-    cali_len=CalibrationLine()
-    cali_mag=CalibrationRect()
+    if variables.cali_mag is not None:
+        main_ui.graphicsView.clearItem(variables.cali_mag)
+        variables.cali_mag=None
+    if variables.cali_len is not None:
+        main_ui.graphicsView.clearItem(variables.cali_len)
+        variables.cali_len=None
 
 def setUpTrigger():
     main_ui.toupcamwidget.lbl_video=main_ui.graphicsView.scene
@@ -142,6 +152,7 @@ def setUpTrigger():
     lengthcali_ui.deleteButton.setEnabled(False)
     lengthcali_ui.calibration_length.clicked.connect(lambda:lengthcali_ui.hide())
     lengthcali_ui.OK.clicked.connect(lambda:lengthcali_ui.hide())
+    lengthcali_ui.OK.clicked.connect(delete_cali)
 
     main_ui.setupMag.clicked.connect((lambda: magcali_ui.show()))
     main_ui.graphicsView.magCaliChanged.connect(lambda:magcali_ui.show())
@@ -150,13 +161,13 @@ def setUpTrigger():
     magcali_ui.magTable.deleteButton=magcali_ui.deleteButton
     magcali_ui.deleteButton.setEnabled(False)
     magcali_ui.calibration_mag.clicked.connect(lambda:magcali_ui.hide())
-    magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
-
-    
+    magcali_ui.OK.clicked.connect(delete_cali)
 
     main_ui.clearAll.clicked.connect(main_ui.graphicsView.clearAll)
-    main_ui.clearAll.clicked.connect(delete_profile)
+    
     main_ui.graphicsView.scene.resolutionChanged.connect(main_ui.graphicsView.clearAll)
+    main_ui.graphicsView.scene.resolutionChanged.connect(delete_profile)
+    main_ui.graphicsView.scene.resolutionChanged.connect(delete_cali)
 
 if __name__ == '__main__':
 
