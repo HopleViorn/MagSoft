@@ -161,10 +161,12 @@ def setUpTrigger():
     magcali_ui.magTable.deleteButton=magcali_ui.deleteButton
     magcali_ui.deleteButton.setEnabled(False)
     magcali_ui.calibration_mag.clicked.connect(lambda:magcali_ui.hide())
+    magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
     magcali_ui.OK.clicked.connect(delete_cali)
 
-    main_ui.clearAll.clicked.connect(main_ui.graphicsView.clearAll)
-    
+    main_ui.clearMark.clicked.connect(main_ui.graphicsView.clearAll)
+    main_ui.clearProfile.clicked.connect(delete_profile)
+
     main_ui.graphicsView.scene.resolutionChanged.connect(main_ui.graphicsView.clearAll)
     main_ui.graphicsView.scene.resolutionChanged.connect(delete_profile)
     main_ui.graphicsView.scene.resolutionChanged.connect(delete_cali)

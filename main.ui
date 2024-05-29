@@ -502,7 +502,7 @@
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
                  </property>
-                 <widget class="QPushButton" name="clearAll">
+                 <widget class="QPushButton" name="clearMark">
                   <property name="geometry">
                    <rect>
                     <x>10</x>
@@ -518,7 +518,32 @@
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>Clear</string>
+                   <string>clear marks</string>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>50</width>
+                    <height>50</height>
+                   </size>
+                  </property>
+                 </widget>
+                 <widget class="QPushButton" name="clearProfile">
+                  <property name="geometry">
+                   <rect>
+                    <x>10</x>
+                    <y>60</y>
+                    <width>231</width>
+                    <height>41</height>
+                   </rect>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>1</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>clear profile</string>
                   </property>
                   <property name="iconSize">
                    <size>
