@@ -478,7 +478,6 @@ class LenCaliViewer(ImgView):
         super(LenCaliViewer,self).__init__(parent)
         self.worker=LenCaliViewerThread()
         self.worker.finish.connect(self.callback)
-        
         self.updateProfile()
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
@@ -524,10 +523,8 @@ class LengthTable(QtWidgets.QTableView):
     mppChanged=QtCore.pyqtSignal()
     def __init__(self,parent):
         super(LengthTable, self).__init__(parent)
-        variables.length_cali_model=QtGui.QStandardItemModel(0,2)
-
+        variables.len_recovery(np.zeros((0,2)))
         model = variables.length_cali_model
-        model.setHorizontalHeaderLabels(['pixel length','actual length'])
 
         self.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
@@ -573,22 +570,20 @@ class LengthTable(QtWidgets.QTableView):
 
         self.mppChanged.emit()
 
-
-
 class CurveTable(QtWidgets.QTableView):
     curveChanged=QtCore.pyqtSignal()
     def __init__(self,parent):
         super(CurveTable, self).__init__(parent)
-        variables.mag_cali_model=QtGui.QStandardItemModel(0,2)
-
-        model = variables.mag_cali_model
-        model.setHorizontalHeaderLabels(['pixel mag','actual mag'])
-
         self.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        variables.mag_recovery(np.zeros((0,2)))
+        model = variables.mag_cali_model
 
         self.setModel(model)
         self.deleteButton=None
         model.itemChanged.connect(self.dumpData)
+
+    def updateModel(self):
+        self.setModel(variables.mag_cali_model)
 
     def dumpData(self):
         model=variables.mag_cali_model
@@ -612,7 +607,5 @@ class CurveTable(QtWidgets.QTableView):
         data=np.array(data)
         indx=np.argsort(data[:,0])
         data=data[indx]
-        print(data)
         variables.mag_cali_array=data
-
         self.curveChanged.emit()

@@ -349,14 +349,6 @@ class Ui_MainWindow(object):
         self.groupBox_4.setObjectName("groupBox_4")
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.groupBox_4)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.mag_info = MagCaliViewer(self.groupBox_4)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(8)
-        sizePolicy.setHeightForWidth(self.mag_info.sizePolicy().hasHeightForWidth())
-        self.mag_info.setSizePolicy(sizePolicy)
-        self.mag_info.setObjectName("mag_info")
-        self.verticalLayout_8.addWidget(self.mag_info)
         self.horizontalLayout_2.addWidget(self.frame_8)
         self.profileTab = QtWidgets.QTabWidget(self.frame_4)
         self.profileTab.setMinimumSize(QtCore.QSize(0, 300))
@@ -427,7 +419,6 @@ class Ui_MainWindow(object):
         self.videoInfo.setText(_translate("MainWindow", "resolution"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Acquire"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Info"))
-        self.mag_info.setText(_translate("MainWindow", "mag_info"))
         self.horizontalProfile.setText(_translate("MainWindow", "Analysis"))
         self.profileTab.setTabText(self.profileTab.indexOf(self.HorizonTab), _translate("MainWindow", "Horizontal Profile"))
         self.verticalProfile.setText(_translate("MainWindow", "Analysis"))
@@ -437,5 +428,5 @@ class Ui_MainWindow(object):
         self.actionNothing_Here.setText(_translate("MainWindow", "Nothing Here"))
         self.actionNothing_Here_2.setText(_translate("MainWindow", "Nothing Here"))
 from toupcamdemo import ToupCamWidget
-from widgets import CaptureList, InitializeLabel, LengthLabel, MagCaliViewer, MainViewer, ProfileViewer, VideoLabel
+from widgets import CaptureList, InitializeLabel, LengthLabel, MainViewer, ProfileViewer, VideoLabel
 import res_rc

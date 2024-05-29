@@ -7,6 +7,33 @@ mm_per_pix=1
 
 length_cali_model=None
 length_cali_array=np.zeros((0,2))
+
+def mag_recovery(array):
+    global mag_cali_model
+    if mag_cali_model is None:
+        mag_cali_model=QtGui.QStandardItemModel(0,2)
+    else:
+        mag_cali_model.setRowCount(0)
+    model=mag_cali_model
+    model.setHorizontalHeaderLabels(['pixel mag','actual mag'])
+    for i in range(array.shape[0]):
+        n_row  = model.rowCount()
+        model.setItem(n_row,0,QtGui.QStandardItem('{:.4f}'.format(array[i,0])))
+        model.setItem(n_row,1,QtGui.QStandardItem('{:.4f}'.format(array[i,1])))
+
+def len_recovery(array):
+    global length_cali_model
+    if length_cali_model is None:
+        length_cali_model=QtGui.QStandardItemModel(0,2)
+    else:
+        length_cali_model.setRowCount(0)
+    model=length_cali_model
+    model.setHorizontalHeaderLabels(['pixel mag','actual mag'])
+    for i in range(array.shape[0]):
+        n_row  = model.rowCount()
+        model.setItem(n_row,0,QtGui.QStandardItem('{:.4f}'.format(array[i,0])))
+        model.setItem(n_row,1,QtGui.QStandardItem('{:.4f}'.format(array[i,1])))
+
 def add_length_point(pix,l):
     if l is None:
         l=0
@@ -49,6 +76,7 @@ def get_derivated_img(img):
         base_img=cv2.resize(base_img,(img.shape[1],img.shape[0])).astype(np.uint8)
     return img-base_img
 
+# TODO
 def update_mag_lut():
     rgb_mt.sort(key=lambda x:x.avg)
     j=0
@@ -65,13 +93,15 @@ def update_mag_lut():
 
 def save_to_file(file_path):
     file=open(file_path,'wb')
-    content=(mm_per_pix,base_img,mag_lut)
+    content=(base_img,length_cali_array,mag_cali_array)
     pickle.dump(content,file)
 
 def load_from_file(file_path):
     global base_img
-    global mm_per_pix
-    global mag_lut
+    global length_cali_array
+    global mag_cali_array
     file=open(file_path,'rb')
     content=pickle.load(file)
-    mm_per_pix,base_img,mag_lut=content
+    base_img,length_cali_array,mag_cali_array=content
+    mag_recovery(mag_cali_array)
+    len_recovery(length_cali_array)

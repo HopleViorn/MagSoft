@@ -19,6 +19,9 @@ class MainUI(QMainWindow, MainUI):
     def __init__(self):
         super(MainUI,self).__init__()
         self.setupUi(self)
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        lengthcali_ui.close()
+        magcali_ui.close()
 
 class MagDialog(QDialog, MagUI):
     def __init__(self):
@@ -37,7 +40,6 @@ def lengthChanged():
     main_ui.length_info.UpdateText()
 
 def magChanged():
-    main_ui.mag_info.updateProfile()
     main_ui.horizontalProfile.updateProfile()
     main_ui.verticalProfile.updateProfile()
 
@@ -47,6 +49,7 @@ def loadCalibrationFile():
         print('load from {}'.format(openfile_name))
         variables.load_from_file(openfile_name[0])
         update_param()
+        magcali_ui.mag_info.updateProfile()
 
 def saveCalibrationFile():
     savefile_name=QtWidgets.QFileDialog.getSaveFileName(main_ui, "Save File", ".", "calibration file (*.mcfg)")
@@ -127,6 +130,9 @@ def setUpTrigger():
     magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
 
     main_ui.graphicsView.scene.frameUpdate.connect(cali_mag.setProfile)
+
+    # main_ui.mainExit.connect(lambda:magcali_ui.hide())
+    # main_ui.mainExit.connect(lambda:lengthcali_ui.hide())
 
 
 if __name__ == '__main__':
