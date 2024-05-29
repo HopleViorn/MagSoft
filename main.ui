@@ -672,7 +672,7 @@
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_9">
                     <item>
-                     <widget class="QPushButton" name="measure_18">
+                     <widget class="QPushButton" name="snap">
                       <property name="enabled">
                        <bool>false</bool>
                       </property>
@@ -683,7 +683,42 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string/>
+                       <string>capture</string>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="res.qrc">
+                        <normaloff>:/icons/icons/icons8-camera-100.png</normaloff>:/icons/icons/icons8-camera-100.png</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>50</width>
+                        <height>50</height>
+                       </size>
+                      </property>
+                      <property name="autoDefault">
+                       <bool>false</bool>
+                      </property>
+                      <property name="default">
+                       <bool>false</bool>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="saveScreenshot">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>save to file</string>
                       </property>
                       <property name="icon">
                        <iconset resource="res.qrc">
@@ -698,9 +733,9 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="snap">
+                     <widget class="QPushButton" name="loadScreenshot">
                       <property name="enabled">
-                       <bool>false</bool>
+                       <bool>true</bool>
                       </property>
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -709,7 +744,7 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string/>
+                       <string>load image</string>
                       </property>
                       <property name="icon">
                        <iconset resource="res.qrc">

@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPainter,QPen,QPixmap,QImage
+from PyQt5.QtGui import QPainter,QPen,QPixmap,QImage,QColor
+from PyQt5.QtCore import QRectF
 from PyQt5.Qt import Qt
 import cv2
 import toupcam
@@ -20,7 +21,6 @@ class ImgView(QtWidgets.QLabel):
         super(ImgView,self).__init__(parent)
         path=get_resource_path(os.path.join('res','demo2.png'))
         img = cv_imread(path)
-        print(path,img.shape)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.setImage(img)
 
@@ -126,7 +126,6 @@ class Canvas(QtWidgets.QGraphicsScene):
         self.img=img
         self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
         self.update()
-        
 
     def Update(self):
         self.worker.setImg(self.single_img)
@@ -142,12 +141,28 @@ class Canvas(QtWidgets.QGraphicsScene):
 
         self.Update()
 
+    def getScreenshot(self):
+        scene=self
+        scene_rect = scene.sceneRect()
+        image = QImage(int(scene_rect.width()), int(scene_rect.height()), QImage.Format_ARGB32)
+        image.fill(QColor(255, 255, 255, 0))  # 设置背景透明
+        painter = QPainter(image)
+        scene.render(painter, target=QRectF(image.rect()), source=scene_rect)
+        painter.end()
+        buffer = image.bits()
+        buffer.setsize(image.byteCount())
+        arr = np.array(buffer).reshape((image.height(), image.width(), 4))
+        return arr
+        
+
     def drawBackground(self, painter: QPainter, rect: QtCore.QRectF) -> None:
         painter.drawPixmap(0,0,self.piximg)
         return super().drawBackground(painter, rect)
     
     def mouseMoveEvent(self, ev: QtGui.QMouseEvent) -> None:
         return super().mouseMoveEvent(ev)
+
+
 
 
 from items import RectArea,CalibrationRect,VerticalLine,HorizontalLine,CalibrationLine,DynamicRectArea

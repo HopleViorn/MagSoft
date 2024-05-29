@@ -11,6 +11,9 @@ from main_ui import Ui_MainWindow as MainUI
 from items import RectArea,LineArea,MeasureLine,MeasureAngle,CalibrationLine,VerticalLine,HorizontalLine,CalibrationRect,DummyRect
 import variables
 
+def cv_imread(file_path):
+    cv_img=cv2.imdecode(np.fromfile(file_path,dtype=np.uint8),-1)
+    return cv_img
 
 from mag_cali_dialog import Ui_Dialog as MagUI
 from length_cali_dialog import Ui_Dialog as lengthUI
@@ -63,6 +66,29 @@ def saveCalibrationFile():
         print('save to {}'.format(savefile_name))
         variables.save_to_file(savefile_name[0])
         main_ui.graphicsView.scene.Update()
+
+def loadScreenshot():
+    openfile_name = QtWidgets.QFileDialog.getOpenFileName(main_ui,'Select File','.','image file (*.png)')
+    if openfile_name[0] != '':
+        print('load from {}'.format(openfile_name))
+        img=cv_imread(openfile_name[0])
+        img = img[:,:,0]
+        #TODO: img process
+        main_ui.graphicsView.scene.setImage(img)
+
+from PyQt5.QtGui import QImage,QPainter,QColor
+from PyQt5.QtCore import QRectF
+import cv2
+
+
+def saveScreenshot():
+    savefile_name=QtWidgets.QFileDialog.getSaveFileName(main_ui, "Save File", ".", 'image file (*.png)')
+    if savefile_name[0] != '':
+        print('save to {}'.format(savefile_name))
+        arr = main_ui.graphicsView.scene.getScreenshot()
+        arr = cv2.cvtColor(arr, cv2.COLOR_RGBA2BGRA)
+        cv2.imwrite(savefile_name[0], arr)
+
 
 def update_param():
     main_ui.graphicsView.scene.Update()
@@ -170,6 +196,9 @@ def setUpTrigger():
     main_ui.graphicsView.scene.resolutionChanged.connect(main_ui.graphicsView.clearAll)
     main_ui.graphicsView.scene.resolutionChanged.connect(delete_profile)
     main_ui.graphicsView.scene.resolutionChanged.connect(delete_cali)
+
+    main_ui.saveScreenshot.clicked.connect(saveScreenshot)
+    main_ui.loadScreenshot.clicked.connect(loadScreenshot)
 
 if __name__ == '__main__':
 
