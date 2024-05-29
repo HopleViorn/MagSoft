@@ -17,11 +17,11 @@ def add_length_point(pix,l):
 
 mag_cali_model=None
 mag_cali_array=np.zeros((0,2))
-def add_mag_point(pix,l):
+def add_mag_point(pix,s):
     global mag_cali_model
     n_row=mag_cali_model.rowCount()
     mag_cali_model.setItem(n_row,0, QtGui.QStandardItem('{:.4f}'.format(pix)))
-    mag_cali_model.setItem(n_row,1, QtGui.QStandardItem('{:.4f}'.format(l)))
+    mag_cali_model.setItem(n_row,1, QtGui.QStandardItem('{:.4f}'.format(s)))
 
 rgb_mt=[]
 

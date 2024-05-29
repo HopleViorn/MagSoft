@@ -285,32 +285,49 @@ class CalibrationLine():
         self.x1,self.y1=pos.x(),pos.y()
         self.setSegment(self.x0,self.y0,self.x1,self.y1)
 
+
+class AverageThread(QtCore.QThread):
+    finish = QtCore.pyqtSignal(object,object)
+    def __init__(self,img):
+        super().__init__()
+        self.img=img
+
+    def __del__(self):
+        self.wait()
+
+    def setImg(self,img):
+        self.img=img
+
+    def run(self):
+        self.finish.emit(img,np.mean(img))
+
 class CalibrationRect(QtWidgets.QGraphicsRectItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0,md=0,avg=0):
         super(CalibrationRect,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
 
-        # self.rect=QtWidgets.QGraphicsRectItem(0,0,0,0)
         self.setPen(QPen(Qt.red, variables.get_line_width(), Qt.SolidLine))
 
         self.text=QtWidgets.QGraphicsTextItem('Average:')
+        self.text.setPos(max(self.x0,self.x1),min(self.y0,self.y1))
         self.text.setDefaultTextColor(Qt.red)
-        self.md=md
-        self.avg=avg
+        self.profile=np.zeros((1,1))
+        self.avg=0
 
         self.items=[self,self.text]
-
         for item in self.items:
             item.setVisible(False)
-
         self.state=0
         
     def init(self):
         for item in self.items:
             item.setVisible(False)
-
         self.setSegment(0,0,0,0)
         self.state=0
+
+    def setProfile(self,img):
+        self.profile=img
+        self.setSegment(self.x0,self.y0,self.x1,self.y1)
 
     def getRect(self):
         l,r=min(self.x0,self.x1),max(self.x0,self.x1)
@@ -318,15 +335,17 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
         return int(l),int(r),int(u),int(d)
         
     def setSegment(self,x0,y0,x1,y1):
-        w,h=abs(x1-x0),abs(y1-y0)
-        self.setRect(min(x0,x1),min(y0,y1),w,h)
+        l,r,u,d=self.getRect()
+        if r>l and d>u:
+            partial=self.profile[u:d,l:r]
+        else:
+            partial=np.zeros((1,1))
 
-    def setText(self,avg,md):
-        self.md=md
-        self.avg=avg
-        self.text.setPos(max(self.x0,self.x1),min(self.y0,self.y1))
-        self.text.setPlainText('Average:{:.2f}\nDensity:{:.2f} mT'.format(avg,md))
-        self.text.setVisible(True)
+        w,h=abs(x1-x0),abs(y1-y0)
+        self.text.setPos(x1,y1)
+        self.avg=np.mean(partial)
+        self.text.setPlainText('Average: {:.4f} px'.format(self.avg))
+        self.setRect(min(x0,x1),min(y0,y1),w,h)
     
     def onClick(self,pos):
         if self.state==0:
@@ -334,11 +353,13 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
             self.y0=pos.y()
             self.state=1
             self.setSegment(self.x0,self.y0,self.x0,self.y0)
-            self.setVisible(True)
+            for item in self.items:
+                item.setVisible(True)
             return 1
         if self.state==1:
             self.x1=pos.x()
             self.y1=pos.y()
+            variables.add_mag_point(self.avg,self.getDouble())
             return 0
 
     def getDouble(self):
@@ -352,6 +373,7 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
 
     def onMoving(self,pos):
         x1,y1=pos.x(),pos.y()
+        self.x1,self.y1=x1,y1
         self.setSegment(self.x0,self.y0,x1,y1)
 
 

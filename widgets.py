@@ -362,31 +362,27 @@ class ProfileViewer(ImgView):
         if variables.currentTab==self.axis:
             self.work.start()
 
-class MagCaliViewer(ImgView):
-    def __init__(self,parent,axis=0):
-        super(MagCaliViewer,self).__init__(parent)
-        import variables
-        self.lis=variables.rgb_mt
-        self.updateProfile()
+class MagCaliViewerThread(QtCore.QThread):
+    finish = QtCore.pyqtSignal(object)
+    def __init__(self):
+        super().__init__()
+        self.width=0
+        self.height=0
 
-    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
-        self.updateProfile()
-        return super().resizeEvent(a0)
+    def __del__(self):
+        self.wait()
 
-    def updateProfile(self):
-        nx=[]
-        for point in self.lis:
-            nx.append((point.avg,point.md))
-        nx.sort(key=lambda x:x[0])
-
-        xx,yy=[],[]
-        for p in nx:
-            xx.append(p[0])
-            yy.append(p[1])
-
+    def run(self):
+        data=variables.mag_cali_array
+        if data is None:
+            return
         mux.lock()
-        plt.figure(figsize=(self.width()/100,self.height()/100))
-        l1=plt.plot(xx,yy)
+        plt.figure(figsize=(self.width/100,self.height/100))
+        plt.subplots_adjust(left=0.25)
+        plt.subplots_adjust(bottom=0.2)
+        l1=plt.plot(data[:,0],data[:,1])
+        plt.xlabel('Pixels (px)')
+        plt.ylabel('Length (mm)')
 
         buffer_ = BytesIO()
         plt.savefig(buffer_,format = 'png')
@@ -395,8 +391,28 @@ class MagCaliViewer(ImgView):
         buffer_.seek(0)
         dataPIL = PIL.Image.open(buffer_).convert('RGB')
         data = np.asarray(dataPIL)
-        self.setImage(data)
+        self.finish.emit(data)
         buffer_.close()
+
+class MagCaliViewer(ImgView):
+    def __init__(self,parent,axis=0):
+        super(MagCaliViewer,self).__init__(parent)
+        self.worker=MagCaliViewerThread()
+        self.worker.finish.connect(self.callback)
+
+        self.updateProfile()
+
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+        self.updateProfile()
+        return super().resizeEvent(a0)
+
+    def callback(self,img):
+        self.setImage(img)
+
+    def updateProfile(self):
+        self.worker.width=self.width()
+        self.worker.height=self.height()
+        self.worker.start()
 
     
 class CaptureList(QtWidgets.QListView):
@@ -573,12 +589,7 @@ class CurveTable(QtWidgets.QTableView):
         self.setModel(model)
         self.deleteButton=None
         model.itemChanged.connect(self.dumpData)
-        # model.itemSelectionChanged.connect(select)
 
-    def select(self):
-        model=variables.mag_cali_model
-        print(model.currentIndex())
-        
     def dumpData(self):
         model=variables.mag_cali_model
         n_row=model.rowCount()
@@ -599,15 +610,9 @@ class CurveTable(QtWidgets.QTableView):
                     item.setText("{:.4f}".format(value))
             data.append(col)
         data=np.array(data)
+        indx=np.argsort(data[:,0])
+        data=data[indx]
+        print(data)
         variables.mag_cali_array=data
 
-        x,y=data[:,0],data[:,1]
-        Sxy=np.sum(x*y)
-        Sx2=np.sum(x*x)
-
-        if Sx2==0:
-            variables.mm_per_pix=1
-        else:
-            variables.mm_per_pix=Sxy/Sx2
-
-        self.mppChanged.emit()
+        self.curveChanged.emit()

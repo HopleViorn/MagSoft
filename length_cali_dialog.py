@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(631, 327)
+        Dialog.resize(634, 323)
         self.lengthTable = LengthTable(Dialog)
         self.lengthTable.setGeometry(QtCore.QRect(20, 20, 251, 251))
         self.lengthTable.setObjectName("lengthTable")

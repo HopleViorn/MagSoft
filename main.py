@@ -126,6 +126,9 @@ def setUpTrigger():
     magcali_ui.calibration_mag.clicked.connect(lambda:magcali_ui.hide())
     magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
 
+    main_ui.graphicsView.scene.frameUpdate.connect(cali_mag.setProfile)
+
+
 if __name__ == '__main__':
 
     variables.rgb_mt.append(DummyRect(avg=0,md=0))
@@ -143,7 +146,13 @@ if __name__ == '__main__':
     cali_len=CalibrationLine()
     cali_mag=CalibrationRect()
 
+    lengthcali_ui.setWindowIcon(main_ui.windowIcon())
+    lengthcali_ui.setWindowTitle('Length Calibration')
+    magcali_ui.setWindowIcon(main_ui.windowIcon())
+    magcali_ui.setWindowTitle('Curve Calibration')
+
     setUpTrigger()
+
     main_ui.show()
 
     sys.exit(app.exec_())
