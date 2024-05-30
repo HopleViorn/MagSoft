@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 import cv2
+import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 mm_per_pix=1
@@ -84,31 +85,21 @@ def get_derivated_img(img):
         base_img=cv2.resize(base_img,(img.shape[1],img.shape[0])).astype(np.uint8)
     return img-base_img
 
-# TODO
-def update_mag_lut():
-    print('!')
-    # rgb_mt.sort(key=lambda x:x.avg)
-    # j=0
-    # l=len(rgb_mt)
-    # print('\n')
-    # for i in range(256):
-    #     if j<l-1 and rgb_mt[j+1].avg <= i:
-    #         j+=1
-    #     x0,x1=rgb_mt[j].avg,rgb_mt[j+1].avg
-    #     y0,y1=rgb_mt[j].md,rgb_mt[j+1].md
-
-    #     point=(i-x0)*(y1-y0)/(x1-x0)+y0
-    #     mag_lut[i]=point
+current_file_name='Default Config'
 
 def save_to_file(file_path):
+    global current_file_name
+    current_file_name=os.path.basename(file_path)
     file=open(file_path,'wb')
     content=(base_img,length_cali_array,mag_cali_array)
     pickle.dump(content,file)
 
 def load_from_file(file_path):
+    global current_file_name
     global base_img
     global length_cali_array
     global mag_cali_array
+    current_file_name=os.path.basename(file_path)
     file=open(file_path,'rb')
     content=pickle.load(file)
     base_img,length_cali_array,mag_cali_array=content

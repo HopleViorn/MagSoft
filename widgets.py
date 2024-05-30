@@ -488,12 +488,20 @@ class LengthLabel(QtWidgets.QLabel):
 class InitializeLabel(QtWidgets.QLabel):
     def __init__(self,parent):
         super(InitializeLabel,self).__init__(parent)
-        # self.UpdateText()
+        self.UpdateText()
 
-    def UpdateText(self,avg):
-        self.setText('Initialized.\n Average: {:.2f}.'.format(avg))
+    def UpdateText(self):
+        self.setText('Background Average: {:.2f}.'.format(np.mean(variables.base_img)))
         self.repaint()
 
+class CalibrationLabel(QtWidgets.QLabel):
+    def __init__(self,parent):
+        super(CalibrationLabel,self).__init__(parent)
+        self.UpdateText()
+
+    def UpdateText(self):
+        self.setText('{}'.format(variables.current_file_name))
+        self.repaint()
 
 class VideoLabel(QtWidgets.QLabel):
     def __init__(self,parent):
@@ -606,7 +614,6 @@ class CurveTable(QtWidgets.QTableView):
         for i in range(256):
             if j+1<l and temp[j+1][0] <= i:
                 j+=1
-            print(i,j)
             x0,x1=temp[j][0],temp[j+1][0]
             if abs(x1-x0)<0.001:
                 continue
@@ -614,7 +621,5 @@ class CurveTable(QtWidgets.QTableView):
 
             point=(i-x0)*(y1-y0)/(x1-x0)+y0
             variables.mag_lut[i]=point
-
-
 
         self.curveChanged.emit()

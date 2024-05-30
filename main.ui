@@ -104,7 +104,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>2</number>
              </property>
              <widget class="QWidget" name="DevicePage">
               <attribute name="title">
@@ -120,138 +120,186 @@
               <attribute name="title">
                <string>Calibration</string>
               </attribute>
-              <widget class="QPushButton" name="initBtn">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>210</y>
-                 <width>251</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Background Initialization</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
-              <widget class="InitializeLabel" name="initializeLabel">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>370</y>
-                 <width>251</width>
-                 <height>51</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Not Initialized</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-              <widget class="QPushButton" name="loadCalibration">
-               <property name="geometry">
-                <rect>
-                 <x>30</x>
-                 <y>20</y>
-                 <width>201</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Load Calibration</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
-              <widget class="QPushButton" name="saveCalibration">
-               <property name="geometry">
-                <rect>
-                 <x>30</x>
-                 <y>80</y>
-                 <width>201</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Save Calibration</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
-              <widget class="QPushButton" name="setupLength">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>260</y>
-                 <width>251</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Length Calibration</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
-              <widget class="QPushButton" name="setupMag">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>310</y>
-                 <width>251</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="text">
-                <string>Curve Calibration</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
-              <widget class="LengthLabel" name="length_info">
+              <widget class="QGroupBox" name="groupBox_5">
                <property name="geometry">
                 <rect>
                  <x>20</x>
-                 <y>430</y>
-                 <width>241</width>
-                 <height>27</height>
+                 <y>20</y>
+                 <width>231</width>
+                 <height>201</height>
                 </rect>
                </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>1</verstretch>
-                </sizepolicy>
+               <property name="title">
+                <string>Load Calibration</string>
                </property>
-               <property name="text">
-                <string>Length Not Calibrated</string>
+               <widget class="QPushButton" name="loadCalibration">
+                <property name="geometry">
+                 <rect>
+                  <x>20</x>
+                  <y>30</y>
+                  <width>191</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Load Calibration</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="saveCalibration">
+                <property name="geometry">
+                 <rect>
+                  <x>20</x>
+                  <y>90</y>
+                  <width>191</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Save Calibration</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+               </widget>
+               <widget class="CalibrationLabel" name="calibrationFile">
+                <property name="geometry">
+                 <rect>
+                  <x>30</x>
+                  <y>150</y>
+                  <width>181</width>
+                  <height>27</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>1</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>default</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </widget>
+              <widget class="QGroupBox" name="groupBox_6">
+               <property name="geometry">
+                <rect>
+                 <x>20</x>
+                 <y>240</y>
+                 <width>231</width>
+                 <height>281</height>
+                </rect>
                </property>
+               <property name="title">
+                <string>Edit Calibration</string>
+               </property>
+               <widget class="QPushButton" name="initBtn">
+                <property name="geometry">
+                 <rect>
+                  <x>20</x>
+                  <y>30</y>
+                  <width>191</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Background Initialization</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="setupLength">
+                <property name="geometry">
+                 <rect>
+                  <x>20</x>
+                  <y>120</y>
+                  <width>191</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Length Calibration</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="setupMag">
+                <property name="geometry">
+                 <rect>
+                  <x>20</x>
+                  <y>210</y>
+                  <width>191</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Magnetic Curve Calibration</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+               </widget>
+               <widget class="LengthLabel" name="length_info">
+                <property name="geometry">
+                 <rect>
+                  <x>30</x>
+                  <y>170</y>
+                  <width>181</width>
+                  <height>27</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>1</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Length Not Calibrated</string>
+                </property>
+               </widget>
+               <widget class="InitializeLabel" name="initializeLabel">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="geometry">
+                 <rect>
+                  <x>30</x>
+                  <y>80</y>
+                  <width>181</width>
+                  <height>31</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Not Initialized</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
               </widget>
              </widget>
              <widget class="QWidget" name="AnalysisPage">
@@ -671,7 +719,7 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string>Capture</string>
+                       <string>  Capture</string>
                       </property>
                       <property name="icon">
                        <iconset resource="res.qrc">
@@ -679,8 +727,8 @@
                       </property>
                       <property name="iconSize">
                        <size>
-                        <width>50</width>
-                        <height>50</height>
+                        <width>30</width>
+                        <height>30</height>
                        </size>
                       </property>
                       <property name="autoDefault">
@@ -706,15 +754,11 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string>Save to File</string>
-                      </property>
-                      <property name="icon">
-                       <iconset resource="res.qrc">
-                        <normaloff>:/icons/icons/icons8-movie-camera-100.png</normaloff>:/icons/icons/icons8-movie-camera-100.png</iconset>
+                       <string> Save Screenshot</string>
                       </property>
                       <property name="iconSize">
                        <size>
-                        <width>50</width>
+                        <width>30</width>
                         <height>50</height>
                        </size>
                       </property>
@@ -734,13 +778,9 @@
                       <property name="text">
                        <string>Load Image</string>
                       </property>
-                      <property name="icon">
-                       <iconset resource="res.qrc">
-                        <normaloff>:/icons/icons/icons8-camera-100.png</normaloff>:/icons/icons/icons8-camera-100.png</iconset>
-                      </property>
                       <property name="iconSize">
                        <size>
-                        <width>50</width>
+                        <width>30</width>
                         <height>50</height>
                        </size>
                       </property>
@@ -976,6 +1016,11 @@
   </customwidget>
   <customwidget>
    <class>VideoLabel</class>
+   <extends>QLabel</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CalibrationLabel</class>
    <extends>QLabel</extends>
    <header>widgets.h</header>
   </customwidget>

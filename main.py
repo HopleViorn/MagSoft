@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow,QGraphicsScene,QGraphicsPixmapItem,QDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow,QGraphicsScene,QGraphicsPixmapItem,QDialog,QMessageBox
 from PyQt5.Qt import Qt
 from PyQt5 import QtCore, QtGui
 import matplotlib.pyplot as plt
@@ -25,6 +25,8 @@ class MainUI(QMainWindow, MainUI):
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         lengthcali_ui.close()
         magcali_ui.close()
+
+        
 
 class MagDialog(QDialog, MagUI):
     def __init__(self):
@@ -59,6 +61,7 @@ def loadCalibrationFile():
         variables.load_from_file(openfile_name[0])
         update_param()
         magcali_ui.mag_info.updateProfile()
+        main_ui.calibrationFile.UpdateText()
 
 def saveCalibrationFile():
     savefile_name=QtWidgets.QFileDialog.getSaveFileName(main_ui, "Save File", ".", "calibration file (*.mcfg)")
@@ -66,6 +69,7 @@ def saveCalibrationFile():
         print('save to {}'.format(savefile_name))
         variables.save_to_file(savefile_name[0])
         main_ui.graphicsView.scene.Update()
+        main_ui.calibrationFile.UpdateText()
 
 def loadScreenshot():
     openfile_name = QtWidgets.QFileDialog.getOpenFileName(main_ui,'Select File','.','image file (*.png)')
@@ -200,6 +204,8 @@ def setUpTrigger():
     main_ui.saveScreenshot.clicked.connect(saveScreenshot)
     main_ui.loadScreenshot.clicked.connect(loadScreenshot)
 
+
+
 if __name__ == '__main__':
 
     variables.rgb_mt.append(DummyRect(avg=0,md=0))
@@ -214,7 +220,9 @@ if __name__ == '__main__':
     magcali_ui=MagDialog()
     lengthcali_ui=LengthDialog()
 
-
+    main_ui.length_info.UpdateText()
+    main_ui.initializeLabel.UpdateText()
+    main_ui.calibrationFile.UpdateText()
 
     lengthcali_ui.setWindowIcon(main_ui.windowIcon())
     lengthcali_ui.setWindowTitle('Length Calibration')
@@ -224,5 +232,19 @@ if __name__ == '__main__':
     setUpTrigger()
 
     main_ui.show()
+    
+    msgBox = QMessageBox(main_ui)
+    msgBox.setWindowTitle('Welcome')
+    msgBox.setText('Would you like to load calibration \nbefore you start?')
+
+    # 添加按钮
+    loadFromFileButton = msgBox.addButton('Load from file', QMessageBox.ActionRole)
+    useDefaultButton = msgBox.addButton('Use default', QMessageBox.ActionRole)
+
+    # 显示对话框并等待用户选择
+    msgBox.exec_()
+
+    if msgBox.clickedButton() == loadFromFileButton:
+        main_ui.loadCalibration.clicked.emit()
 
     sys.exit(app.exec_())
