@@ -366,7 +366,7 @@ class MagCaliViewerThread(QtCore.QThread):
         plt.subplots_adjust(left=0.25)
         plt.subplots_adjust(bottom=0.2)
         l1=plt.plot(data[:,0],data[:,1])
-        plt.xlabel('grey scale (px)')
+        plt.xlabel('grayscale (px)')
         plt.ylabel('density  (mT)')
 
         buffer_ = BytesIO()
@@ -516,7 +516,6 @@ class LengthTable(QtWidgets.QTableView):
         self.setModel(model)
         self.deleteButton=None
         model.itemChanged.connect(self.dumpData)
-        # model.itemSelectionChanged.connect(select)
 
     def select(self):
         model=variables.length_cali_model
@@ -593,4 +592,29 @@ class CurveTable(QtWidgets.QTableView):
         indx=np.argsort(data[:,0])
         data=data[indx]
         variables.mag_cali_array=data
+
+        temp=[]
+
+        temp.append((0,0))
+        for i in range(data.shape[0]):
+            temp.append((data[i,0],data[i,1]))
+        temp.append((256,256))
+
+        j=0
+        l=len(temp)
+        variables.mag_lut=np.array([i for i in range(0,256)])
+        for i in range(256):
+            if j+1<l and temp[j+1][0] <= i:
+                j+=1
+            print(i,j)
+            x0,x1=temp[j][0],temp[j+1][0]
+            if abs(x1-x0)<0.001:
+                continue
+            y0,y1=temp[j][1],temp[j+1][1]
+
+            point=(i-x0)*(y1-y0)/(x1-x0)+y0
+            variables.mag_lut[i]=point
+
+
+
         self.curveChanged.emit()

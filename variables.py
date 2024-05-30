@@ -86,18 +86,19 @@ def get_derivated_img(img):
 
 # TODO
 def update_mag_lut():
-    rgb_mt.sort(key=lambda x:x.avg)
-    j=0
-    l=len(rgb_mt)
-    print('\n')
-    for i in range(256):
-        if j<l-1 and rgb_mt[j+1].avg <= i:
-            j+=1
-        x0,x1=rgb_mt[j].avg,rgb_mt[j+1].avg
-        y0,y1=rgb_mt[j].md,rgb_mt[j+1].md
+    print('!')
+    # rgb_mt.sort(key=lambda x:x.avg)
+    # j=0
+    # l=len(rgb_mt)
+    # print('\n')
+    # for i in range(256):
+    #     if j<l-1 and rgb_mt[j+1].avg <= i:
+    #         j+=1
+    #     x0,x1=rgb_mt[j].avg,rgb_mt[j+1].avg
+    #     y0,y1=rgb_mt[j].md,rgb_mt[j+1].md
 
-        point=(i-x0)*(y1-y0)/(x1-x0)+y0
-        mag_lut[i]=point
+    #     point=(i-x0)*(y1-y0)/(x1-x0)+y0
+    #     mag_lut[i]=point
 
 def save_to_file(file_path):
     file=open(file_path,'wb')

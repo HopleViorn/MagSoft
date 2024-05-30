@@ -130,11 +130,7 @@
                 </rect>
                </property>
                <property name="text">
-                <string> Background Initialize</string>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/icons/icons8-analysis-100.png</normaloff>:/icons/icons/icons8-analysis-100.png</iconset>
+                <string>Background Initialization</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -149,8 +145,8 @@
                </property>
                <property name="geometry">
                 <rect>
-                 <x>0</x>
-                 <y>460</y>
+                 <x>10</x>
+                 <y>370</y>
                  <width>251</width>
                  <height>51</height>
                 </rect>
@@ -210,11 +206,7 @@
                 </rect>
                </property>
                <property name="text">
-                <string>Setup Length</string>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/icons/icons8-analysis-100.png</normaloff>:/icons/icons/icons8-analysis-100.png</iconset>
+                <string>Length Calibration</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -233,11 +225,7 @@
                 </rect>
                </property>
                <property name="text">
-                <string>Setup Mag</string>
-               </property>
-               <property name="icon">
-                <iconset resource="res.qrc">
-                 <normaloff>:/icons/icons/icons8-analysis-100.png</normaloff>:/icons/icons/icons8-analysis-100.png</iconset>
+                <string>Curve Calibration</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -250,7 +238,7 @@
                <property name="geometry">
                 <rect>
                  <x>20</x>
-                 <y>520</y>
+                 <y>430</y>
                  <width>241</width>
                  <height>27</height>
                 </rect>
@@ -395,7 +383,7 @@
                   <item>
                    <widget class="QGroupBox" name="groupBox_3">
                     <property name="title">
-                     <string>Measure</string>
+                     <string>Marks</string>
                     </property>
                     <widget class="QPushButton" name="measure_length">
                      <property name="enabled">
@@ -518,7 +506,7 @@
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>clear marks</string>
+                   <string>Clear Marks</string>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -543,7 +531,7 @@
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>clear profile</string>
+                   <string>Clear Profile</string>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -683,7 +671,7 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string>capture</string>
+                       <string>Capture</string>
                       </property>
                       <property name="icon">
                        <iconset resource="res.qrc">
@@ -718,7 +706,7 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string>save to file</string>
+                       <string>Save to File</string>
                       </property>
                       <property name="icon">
                        <iconset resource="res.qrc">
@@ -744,7 +732,7 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string>load image</string>
+                       <string>Load Image</string>
                       </property>
                       <property name="icon">
                        <iconset resource="res.qrc">
