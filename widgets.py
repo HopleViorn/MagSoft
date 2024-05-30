@@ -19,9 +19,10 @@ def get_resource_path(relative_path):
 class ImgView(QtWidgets.QLabel):
     def __init__(self,parent):
         super(ImgView,self).__init__(parent)
-        path=get_resource_path(os.path.join('res','demo2.png'))
-        img = cv_imread(path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # path=get_resource_path(os.path.join('res','demo2.png'))
+        # img = cv_imread(path)
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img=np.zeros((1,1))
         self.setImage(img)
 
     def setQImage(self,img: QImage):
@@ -366,7 +367,7 @@ class MagCaliViewerThread(QtCore.QThread):
         plt.subplots_adjust(left=0.25)
         plt.subplots_adjust(bottom=0.2)
         l1=plt.plot(data[:,0],data[:,1])
-        plt.xlabel('grayscale (px)')
+        plt.xlabel('grayscale ')
         plt.ylabel('density  (mT)')
 
         buffer_ = BytesIO()

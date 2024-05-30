@@ -1,0 +1,1 @@
+pyinstaller MagSoft.py --add-data res:res -w --noconfirm --i icons\icons8-science-class-with-nucleus-and-atoms-revolving-around-it-96.png
