@@ -435,7 +435,7 @@ class Ui_MainWindow(object):
         self.actionNothing_Here_2.setObjectName("actionNothing_Here_2")
 
         self.retranslateUi(MainWindow)
-        self.ToolBox.setCurrentIndex(2)
+        self.ToolBox.setCurrentIndex(0)
         self.profileTab.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -443,7 +443,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MagSoft"))
         self.ToolBox.setTabText(self.ToolBox.indexOf(self.DevicePage), _translate("MainWindow", "Device"))
-        self.groupBox_5.setTitle(_translate("MainWindow", "Load Calibration"))
+        self.groupBox_5.setTitle(_translate("MainWindow", "Calibration Files"))
         self.loadCalibration.setText(_translate("MainWindow", "Load Calibration"))
         self.saveCalibration.setText(_translate("MainWindow", "Save Calibration"))
         self.calibrationFile.setText(_translate("MainWindow", "default"))

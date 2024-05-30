@@ -104,7 +104,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="DevicePage">
               <attribute name="title">
@@ -130,7 +130,7 @@
                 </rect>
                </property>
                <property name="title">
-                <string>Load Calibration</string>
+                <string>Calibration Files</string>
                </property>
                <widget class="QPushButton" name="loadCalibration">
                 <property name="geometry">

@@ -93,7 +93,6 @@ def saveScreenshot():
         arr = cv2.cvtColor(arr, cv2.COLOR_RGBA2BGRA)
         cv2.imwrite(savefile_name[0], arr)
 
-
 def update_param():
     main_ui.graphicsView.scene.Update()
     main_ui.graphicsView.initializeChanged.emit(np.mean(variables.base_img))
@@ -140,8 +139,6 @@ def setUpTrigger():
     main_ui.measure_length.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureLine(),isMeasure=True))
     main_ui.measure_angle.clicked.connect(lambda: main_ui.graphicsView.startDraw(drawItem=MeasureAngle(),isMeasure=True))
     
-    # lengthcali_ui.calibration_length.clicked.connect(lambda: (cali_len.init(),main_ui.graphicsView.startDraw(drawItem=cali_len)))
-    # magcali_ui.calibration_mag.clicked.connect(lambda: (cali_mag.init(),main_ui.graphicsView.startDraw(drawItem=cali_mag)))
     lengthcali_ui.calibration_length.clicked.connect(draw_cali_len)
     magcali_ui.calibration_mag.clicked.connect(draw_cali_mag)
 
@@ -178,8 +175,7 @@ def setUpTrigger():
     main_ui.graphicsView.lengthCaliChanged.connect(lambda:lengthcali_ui.show())
     lengthcali_ui.lengthTable.mppChanged.connect(lengthChanged)
     lengthcali_ui.lengthTable.mppChanged.connect(lengthcali_ui.len_info.updateProfile)
-    lengthcali_ui.lengthTable.deleteButton=lengthcali_ui.deleteButton
-    lengthcali_ui.deleteButton.setEnabled(False)
+    lengthcali_ui.deleteButton.clicked.connect(lengthcali_ui.lengthTable.deleteSelectedRows)
     lengthcali_ui.calibration_length.clicked.connect(lambda:lengthcali_ui.hide())
     lengthcali_ui.OK.clicked.connect(lambda:lengthcali_ui.hide())
     lengthcali_ui.OK.clicked.connect(delete_cali)
@@ -188,9 +184,9 @@ def setUpTrigger():
     main_ui.graphicsView.magCaliChanged.connect(lambda:magcali_ui.show())
     magcali_ui.magTable.curveChanged.connect(magChanged)
     magcali_ui.magTable.curveChanged.connect(magcali_ui.mag_info.updateProfile)
-    magcali_ui.magTable.deleteButton=magcali_ui.deleteButton
-    magcali_ui.deleteButton.setEnabled(False)
-    magcali_ui.calibration_mag.clicked.connect(lambda:magcali_ui.hide())
+
+    magcali_ui.deleteButton.clicked.connect(magcali_ui.magTable.deleteSelectedRows)
+    
     magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
     magcali_ui.OK.clicked.connect(delete_cali)
 

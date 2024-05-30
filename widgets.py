@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPainter,QPen,QPixmap,QImage,QColor
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QRectF
 from PyQt5.Qt import Qt
 import cv2
@@ -374,6 +375,7 @@ class MagCaliViewerThread(QtCore.QThread):
         plt.savefig(buffer_,format = 'png')
         plt.close()
         mux.unlock()
+        
         buffer_.seek(0)
         dataPIL = PIL.Image.open(buffer_).convert('RGB')
         data = np.asarray(dataPIL)
@@ -523,12 +525,17 @@ class LengthTable(QtWidgets.QTableView):
         self.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
         self.setModel(model)
-        self.deleteButton=None
         model.itemChanged.connect(self.dumpData)
 
-    def select(self):
+    def deleteSelectedRows(self):
         model=variables.length_cali_model
-        print(model.currentIndex())
+        selected_indexes = self.selectionModel().selectedIndexes()
+        if not selected_indexes:
+            QMessageBox.warning(self, "Warning", "No row selected!")
+            return
+        for index in sorted(selected_indexes, key=lambda x: x.row(), reverse=True):
+            model.removeRow(index.row())
+        self.dumpData()
 
     def dumpData(self):
         model=variables.length_cali_model
@@ -550,6 +557,8 @@ class LengthTable(QtWidgets.QTableView):
                     item.setText("{:.4f}".format(value))
             data.append(col)
         data=np.array(data)
+        if len(data)==0:
+            data=np.zeros((0,2))
         variables.length_cali_array=data
 
         x,y=data[:,0],data[:,1]
@@ -572,8 +581,17 @@ class CurveTable(QtWidgets.QTableView):
         model = variables.mag_cali_model
 
         self.setModel(model)
-        self.deleteButton=None
         model.itemChanged.connect(self.dumpData)
+
+    def deleteSelectedRows(self):
+        model=variables.mag_cali_model
+        selected_indexes = self.selectionModel().selectedIndexes()
+        if not selected_indexes:
+            QMessageBox.warning(self, "Warning", "No row selected!")
+            return
+        for index in sorted(selected_indexes, key=lambda x: x.row(), reverse=True):
+            model.removeRow(index.row())
+        self.dumpData()
 
     def updateModel(self):
         self.setModel(variables.mag_cali_model)
@@ -598,6 +616,8 @@ class CurveTable(QtWidgets.QTableView):
                     item.setText("{:.4f}".format(value))
             data.append(col)
         data=np.array(data)
+        if len(data)==0:
+            data=np.zeros((0,2))
         indx=np.argsort(data[:,0])
         data=data[indx]
         variables.mag_cali_array=data
