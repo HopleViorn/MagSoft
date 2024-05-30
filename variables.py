@@ -15,7 +15,7 @@ def mag_recovery(array):
     else:
         mag_cali_model.setRowCount(0)
     model=mag_cali_model
-    model.setHorizontalHeaderLabels(['pixel mag','actual mag'])
+    model.setHorizontalHeaderLabels(['grey scale (px)','flux density (mT)'])
     for i in range(array.shape[0]):
         n_row  = model.rowCount()
         model.setItem(n_row,0,QtGui.QStandardItem('{:.4f}'.format(array[i,0])))
@@ -28,7 +28,7 @@ def len_recovery(array):
     else:
         length_cali_model.setRowCount(0)
     model=length_cali_model
-    model.setHorizontalHeaderLabels(['pixel mag','actual mag'])
+    model.setHorizontalHeaderLabels(['pixel length (px)','actual length (mm)'])
     for i in range(array.shape[0]):
         n_row  = model.rowCount()
         model.setItem(n_row,0,QtGui.QStandardItem('{:.4f}'.format(array[i,0])))

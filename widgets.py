@@ -366,8 +366,8 @@ class MagCaliViewerThread(QtCore.QThread):
         plt.subplots_adjust(left=0.25)
         plt.subplots_adjust(bottom=0.2)
         l1=plt.plot(data[:,0],data[:,1])
-        plt.xlabel('Pixels (px)')
-        plt.ylabel('Length (mm)')
+        plt.xlabel('grey scale (px)')
+        plt.ylabel('density  (mT)')
 
         buffer_ = BytesIO()
         plt.savefig(buffer_,format = 'png')
@@ -445,8 +445,8 @@ class LenCaliViewerThread(QtCore.QThread):
         plt.subplots_adjust(bottom=0.2)
         l1=plt.scatter(data[:,0],data[:,1])
         l2=plt.axline((0,0),(1,variables.mm_per_pix))
-        plt.xlabel('Pixels (px)')
-        plt.ylabel('Length (mm)')
+        plt.xlabel('pixel length (px)')
+        plt.ylabel('actual length (mm)')
 
         buffer_ = BytesIO()
         plt.savefig(buffer_,format = 'png')
