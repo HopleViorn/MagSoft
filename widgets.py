@@ -89,6 +89,7 @@ class GraphicCalcThread(QtCore.QThread):
     def __init__(self,img):
         super().__init__()
         self.img=img
+        self.maglut=True
 
     def __del__(self):
         self.wait()
@@ -98,7 +99,10 @@ class GraphicCalcThread(QtCore.QThread):
 
     def run(self):
         der=variables.get_derivated_img(self.img)
-        mag=variables.mag_lut[der].astype(np.uint8)
+        if self.maglut:
+            mag=variables.mag_lut[der].astype(np.uint8)
+        else:
+            mag=der
         img=cv2.applyColorMap(mag,variables.color_map)
         
         self.finish.emit(img,der)
@@ -122,10 +126,12 @@ class Canvas(QtWidgets.QGraphicsScene):
 
     def switch_to_grey(self):
         variables.color_map=cv2.COLORMAP_BONE
+        self.worker.maglut=False
         self.Update()
 
     def switch_to_color(self):
         variables.color_map=cv2.COLORMAP_JET
+        self.worker.maglut=True
         self.Update()
 
         
@@ -373,11 +379,14 @@ class MagCaliViewerThread(QtCore.QThread):
         data=variables.mag_cali_array
         if data is None:
             return
+        
         mux.lock()
         plt.figure(figsize=(self.width/100,self.height/100))
         plt.subplots_adjust(left=0.25)
         plt.subplots_adjust(bottom=0.2)
-        l1=plt.plot(data[:,0],data[:,1])
+        x=np.hstack((0,data[:,0],256))
+        y=np.hstack((0,data[:,1],256))
+        l1=plt.plot(x,y)
         plt.xlabel('grayscale ')
         plt.ylabel('density  (mT)')
 

@@ -7,9 +7,18 @@ from PyQt5 import QtCore, QtGui
 import numpy as np
 import copy
 
+nuclear=np.zeros((1,1),dtype=np.float16)
+def accumulate(img):
+    global nuclear
+    k=0.99
+    img=img.astype(np.float16)
+    nuclear=nuclear*k+img*(1-k)
+    return nuclear
+
 def get_grey(img):
     img=img.astype(np.uint16)
     r=(img[:,:,0]+img[:,:,1]+img[:,:,2])/3
+    # r=accumulate(r)
     return r.astype(np.uint8)
 
 class ConvertThread(QtCore.QThread):

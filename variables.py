@@ -84,9 +84,10 @@ def get_font_width():
 def get_derivated_img(img):
     global base_img
     if base_img.shape != img.shape:
-        base_img=cv2.resize(base_img,(img.shape[1],img.shape[0])).astype(np.int16)
+        base_img=cv2.resize(base_img,(img.shape[1],img.shape[0]))
 
     img=img.astype(np.int16)
+
     img=img-base_img
     img[img<0]=0
     img=img.astype(np.uint8)
