@@ -67,6 +67,8 @@ resolution=(1,1)
 
 currentTab=1
 
+color_map=cv2.COLORMAP_JET
+
 def setCurrentTab(tab):
     global currentTab
     currentTab=tab
@@ -87,7 +89,7 @@ def get_derivated_img(img):
     img=img.astype(np.int16)
     img=img-base_img
     img[img<0]=0
-    img=img.astype(np.int8)
+    img=img.astype(np.uint8)
     return img
 
 current_file_name='Default Config'

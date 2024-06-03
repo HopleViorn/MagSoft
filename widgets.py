@@ -99,7 +99,8 @@ class GraphicCalcThread(QtCore.QThread):
     def run(self):
         der=variables.get_derivated_img(self.img)
         mag=variables.mag_lut[der].astype(np.uint8)
-        img=cv2.applyColorMap(mag,cv2.COLORMAP_JET)
+        img=cv2.applyColorMap(mag,variables.color_map)
+        
         self.finish.emit(img,der)
 
 import numpy as np
@@ -118,6 +119,15 @@ class Canvas(QtWidgets.QGraphicsScene):
         self.worker=GraphicCalcThread(copy.deepcopy(self.single_img))
         self.worker.finish.connect(self.callback)
         self.setImage(img)
+
+    def switch_to_grey(self):
+        variables.color_map=cv2.COLORMAP_BONE
+        self.Update()
+
+    def switch_to_color(self):
+        variables.color_map=cv2.COLORMAP_JET
+        self.Update()
+
         
     def setQImage(self,img: QImage):
         self.piximg=QPixmap.fromImage(img)

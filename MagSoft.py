@@ -26,8 +26,6 @@ class MainUI(QMainWindow, MainUI):
         lengthcali_ui.close()
         magcali_ui.close()
 
-        
-
 class MagDialog(QDialog, MagUI):
     def __init__(self):
         super(MagDialog,self).__init__()
@@ -172,23 +170,31 @@ def setUpTrigger():
 
 
     main_ui.setupLength.clicked.connect((lambda: lengthcali_ui.show()))
+    main_ui.setupLength.clicked.connect(main_ui.graphicsView.scene.switch_to_grey)
     main_ui.graphicsView.lengthCaliChanged.connect(lambda:lengthcali_ui.show())
     lengthcali_ui.lengthTable.mppChanged.connect(lengthChanged)
     lengthcali_ui.lengthTable.mppChanged.connect(lengthcali_ui.len_info.updateProfile)
     lengthcali_ui.deleteButton.clicked.connect(lengthcali_ui.lengthTable.deleteSelectedRows)
     lengthcali_ui.calibration_length.clicked.connect(lambda:lengthcali_ui.hide())
+    
     lengthcali_ui.OK.clicked.connect(lambda:lengthcali_ui.hide())
     lengthcali_ui.OK.clicked.connect(delete_cali)
+    lengthcali_ui.OK.clicked.connect(main_ui.graphicsView.scene.switch_to_color)
 
     main_ui.setupMag.clicked.connect((lambda: magcali_ui.show()))
+    main_ui.setupMag.clicked.connect(main_ui.graphicsView.scene.switch_to_grey)
+
+
     main_ui.graphicsView.magCaliChanged.connect(lambda:magcali_ui.show())
     magcali_ui.magTable.curveChanged.connect(magChanged)
     magcali_ui.magTable.curveChanged.connect(magcali_ui.mag_info.updateProfile)
 
     magcali_ui.deleteButton.clicked.connect(magcali_ui.magTable.deleteSelectedRows)
+    magcali_ui.calibration_mag.clicked.connect(lambda:magcali_ui.hide())
     
     magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
     magcali_ui.OK.clicked.connect(delete_cali)
+    magcali_ui.OK.clicked.connect(main_ui.graphicsView.scene.switch_to_color)
 
     main_ui.clearMark.clicked.connect(main_ui.graphicsView.clearAll)
     main_ui.clearProfile.clicked.connect(delete_profile)
@@ -233,11 +239,8 @@ if __name__ == '__main__':
     msgBox.setWindowTitle('Welcome')
     msgBox.setText('Would you like to load calibration \nbefore you start?')
 
-    # 添加按钮
     loadFromFileButton = msgBox.addButton('Load from file', QMessageBox.ActionRole)
     useDefaultButton = msgBox.addButton('Use default', QMessageBox.ActionRole)
-
-    # 显示对话框并等待用户选择
     msgBox.exec_()
 
     if msgBox.clickedButton() == loadFromFileButton:
