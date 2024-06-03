@@ -14,8 +14,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1730, 966)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        MainWindow.resize(1608, 890)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
@@ -364,7 +364,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.frame_6)
         self.horizontalLayout.addWidget(self.frame_5)
         self.frame_4 = QtWidgets.QFrame(self.splitter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_4.sizePolicy().hasHeightForWidth())
@@ -387,15 +387,7 @@ class Ui_MainWindow(object):
         self.groupBox_4.setObjectName("groupBox_4")
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.groupBox_4)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.horizontalLayout_2.addWidget(self.frame_8)
-        self.profileTab = QtWidgets.QTabWidget(self.frame_4)
-        self.profileTab.setMinimumSize(QtCore.QSize(0, 300))
-        self.profileTab.setObjectName("profileTab")
-        self.HorizonTab = QtWidgets.QWidget()
-        self.HorizonTab.setObjectName("HorizonTab")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.HorizonTab)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.horizontalProfile = ProfileViewer(self.HorizonTab)
+        self.horizontalProfile = ProfileViewer(self.groupBox_4)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -404,7 +396,18 @@ class Ui_MainWindow(object):
         self.horizontalProfile.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.horizontalProfile.setMouseTracking(False)
         self.horizontalProfile.setObjectName("horizontalProfile")
-        self.verticalLayout_2.addWidget(self.horizontalProfile)
+        self.verticalLayout_8.addWidget(self.horizontalProfile)
+        self.horizontalLayout_2.addWidget(self.frame_8)
+        self.profileTab = QtWidgets.QTabWidget(self.frame_4)
+        self.profileTab.setMinimumSize(QtCore.QSize(0, 300))
+        self.profileTab.setObjectName("profileTab")
+        self.HorizonTab = QtWidgets.QWidget()
+        self.HorizonTab.setObjectName("HorizonTab")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.HorizonTab)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.profileChart = TestChart(self.HorizonTab)
+        self.profileChart.setObjectName("profileChart")
+        self.verticalLayout_2.addWidget(self.profileChart)
         self.profileTab.addTab(self.HorizonTab, "")
         self.VerticalTab = QtWidgets.QWidget()
         self.VerticalTab.setObjectName("VerticalTab")
@@ -435,8 +438,8 @@ class Ui_MainWindow(object):
         self.actionNothing_Here_2.setObjectName("actionNothing_Here_2")
 
         self.retranslateUi(MainWindow)
-        self.ToolBox.setCurrentIndex(0)
-        self.profileTab.setCurrentIndex(1)
+        self.ToolBox.setCurrentIndex(1)
+        self.profileTab.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -474,5 +477,5 @@ class Ui_MainWindow(object):
         self.actionNothing_Here.setText(_translate("MainWindow", "Nothing Here"))
         self.actionNothing_Here_2.setText(_translate("MainWindow", "Nothing Here"))
 from toupcamdemo import ToupCamWidget
-from widgets import CalibrationLabel, CaptureList, InitializeLabel, LengthLabel, MainViewer, ProfileViewer, VideoLabel
+from widgets import CalibrationLabel, CaptureList, InitializeLabel, LengthLabel, MainViewer, ProfileViewer, TestChart, VideoLabel
 import res_rc

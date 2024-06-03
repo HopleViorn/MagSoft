@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPainter,QPen,QPixmap,QImage,QColor
+from PyQt5.QtChart import QChartView,QChart,QLineSeries,QValueAxis
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QRectF
 from PyQt5.Qt import Qt
@@ -20,9 +21,6 @@ def get_resource_path(relative_path):
 class ImgView(QtWidgets.QLabel):
     def __init__(self,parent):
         super(ImgView,self).__init__(parent)
-        # path=get_resource_path(os.path.join('res','demo2.png'))
-        # img = cv_imread(path)
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img=np.zeros((1,1))
         self.setImage(img)
 
@@ -99,8 +97,14 @@ class GraphicCalcThread(QtCore.QThread):
 
     def run(self):
         der=variables.get_derivated_img(self.img)
+        delta=der.max()
+        amax=variables.mag_lut.max()
+        amin=variables.mag_lut.min()
         if self.maglut:
-            mag=variables.mag_lut[der].astype(np.uint8)
+            mag=variables.mag_lut[der]
+            mag=(mag-amin)/(amax-amin)*255
+
+            mag=mag.astype(np.uint8)
         else:
             mag=der
         img=cv2.applyColorMap(mag,variables.color_map)
@@ -663,3 +667,37 @@ class CurveTable(QtWidgets.QTableView):
             variables.mag_lut[i]=point
 
         self.curveChanged.emit()
+
+import math
+class TestChart(QChartView):
+    def __init__(self,parent):
+        super(TestChart, self).__init__(parent)
+        chart = QChart()               #创建 chart
+        chart.setTitle("简单函数曲线")
+        chartView=self   #创建 chartView
+        chartView.setChart(chart)      #chart添加到chartView
+        series0 = QLineSeries()
+        series1 = QLineSeries()
+        series0.setName("Sin曲线")
+        series1.setName("Cos曲线")
+        chart.addSeries(series0)       #序列添加到图表
+        chart.addSeries(series1)
+        t=0
+        intv=0.1
+        pointCount=100
+        for i in range(pointCount):
+            y1=math.cos(t) 
+            series0.append(t,y1)
+            y2=1.5*math.sin(t+20)
+            series1.append(t,y2)
+            t=t+intv
+        axisX = QValueAxis()      #x轴
+        axisX.setRange(0, 10)     #设置坐标轴范围
+        axisX.setTitleText("time(secs)")    #轴标题
+        axisY = QValueAxis()      #y轴
+        axisY.setRange(-2, 2)
+        axisY.setTitleText("value")
+        chart.setAxisX(axisX, series0)    #为序列series0设置坐标轴
+        chart.setAxisY(axisY, series0)
+        chart.setAxisX(axisX, series1)    #为序列series1设置坐标轴
+        chart.legend().setAlignment(Qt.AlignRight)

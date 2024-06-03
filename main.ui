@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1730</width>
-    <height>966</height>
+    <width>1608</width>
+    <height>890</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -104,7 +104,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="DevicePage">
               <attribute name="title">
@@ -824,7 +824,7 @@
          </widget>
          <widget class="QFrame" name="frame_4">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -883,26 +883,7 @@
               <property name="title">
                <string>Info</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8"/>
-             </widget>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTabWidget" name="profileTab">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>300</height>
-              </size>
-             </property>
-             <property name="currentIndex">
-              <number>1</number>
-             </property>
-             <widget class="QWidget" name="HorizonTab">
-              <attribute name="title">
-               <string>Horizontal Profile</string>
-              </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
+              <layout class="QVBoxLayout" name="verticalLayout_8">
                <item>
                 <widget class="ProfileViewer" name="horizontalProfile">
                  <property name="sizePolicy">
@@ -921,6 +902,29 @@
                   <string>Analysis</string>
                  </property>
                 </widget>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTabWidget" name="profileTab">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>300</height>
+              </size>
+             </property>
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="HorizonTab">
+              <attribute name="title">
+               <string>Horizontal Profile</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="TestChart" name="profileChart"/>
                </item>
               </layout>
              </widget>
@@ -1022,6 +1026,11 @@
   <customwidget>
    <class>CalibrationLabel</class>
    <extends>QLabel</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TestChart</class>
+   <extends>QGraphicsView</extends>
    <header>widgets.h</header>
   </customwidget>
  </customwidgets>
