@@ -76,7 +76,7 @@ def get_line_width():
     return resolution[1]/line_coe
 
 def get_font_width():
-    font_coe=60
+    font_coe=40
     return resolution[1]/font_coe
 
 def get_derivated_img(img):

@@ -2,16 +2,38 @@ import sys, toupcam as toupcam
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QTimer, QSignalBlocker, Qt
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QCheckBox, QMessageBox, QPushButton, QComboBox, QSlider, QGroupBox, QGridLayout, QBoxLayout, QHBoxLayout, QVBoxLayout, QMenu, QAction
+from PyQt5 import QtCore, QtGui
 
 import numpy as np
 import copy
 
-def convert_to_grey(img):
-    return img[:,:,0]
+def get_grey(img):
+    img=img.astype(np.uint16)
+    r=(img[:,:,0]+img[:,:,1]+img[:,:,2])/3
+    return r.astype(np.uint8)
+
+class ConvertThread(QtCore.QThread):
+    finish = QtCore.pyqtSignal(object)
+    def __init__(self):
+        super().__init__()
+        self.img=np.zeros((1,1,3),dtype=np.uint16)
+
+    def __del__(self):
+        self.wait()
+
+    def setImg(self,img):
+        self.img=img
+
+    def run(self):
+        self.finish.emit(get_grey(self.img))
+
 
 class ToupCamWidget(QWidget):
     evtCallback = pyqtSignal(int)
     captured = pyqtSignal(object,object)
+
+    def set_video(self,img):
+        self.lbl_video.setImage(img) 
 
     @staticmethod
     def makeLayout(lbl1, sli1, val1, lbl2, sli2, val2):
@@ -32,6 +54,9 @@ class ToupCamWidget(QWidget):
 
     def __init__(self,parent):
         super().__init__(parent)
+        self.convertThread = ConvertThread()
+        self.convertThread.finish.connect(self.set_video)
+
         # self.setMinimumSize(1024, 768)
         self.hcam = None
         self.timer = QTimer(self)
@@ -202,7 +227,7 @@ class ToupCamWidget(QWidget):
     def startCamera(self):
         self.pData = bytes(toupcam.TDIBWIDTHBYTES(self.imgWidth * 24) * self.imgHeight)
         uimin, uimax, uidef = self.hcam.get_ExpTimeRange()
-        self.slider_expoTime.setRange(uimin, uimax)
+        self.slider_expoTime.setRange(uimin, 30000)
         self.slider_expoTime.setValue(uidef)
         usmin, usmax, usdef = self.hcam.get_ExpoAGainRange()
         self.slider_expoGain.setRange(usmin, usmax)
@@ -269,7 +294,7 @@ class ToupCamWidget(QWidget):
         if self.hcam:
             if self.pData is not None:
                 image=copy.deepcopy(np.frombuffer(self.pData,dtype=np.uint8).reshape((self.imgHeight,self.imgWidth,3)))
-                image=convert_to_grey(image)
+                image=get_grey(image)
                 self.count += 1
                 name='capture_{}'.format(self.count)
                 self.captured.emit(image,name)
@@ -305,10 +330,10 @@ class ToupCamWidget(QWidget):
         else:
             image = np.frombuffer(self.pData,np.uint8)
             image=image.reshape((self.imgHeight,self.imgWidth,3))
-            image=convert_to_grey(image)
-            self.lbl_video.setImage(image)
-            self.lbl_video.update()
-
+            self.convertThread.setImg(image)
+            self.convertThread.start()
+            # image=convert_to_grey(image)
+            
     def handleExpoEvent(self):
         time = self.hcam.get_ExpoTime()
         gain = self.hcam.get_ExpoAGain()
