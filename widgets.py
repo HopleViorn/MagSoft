@@ -298,7 +298,7 @@ class ProfileCalcThread(QtCore.QThread):
 
     def run(self):
         img=self.profile
-        # img=variables.mag_lut[img]
+        img=variables.mag_lut[img]
         buffer_ = BytesIO()
         maxplot=np.max(img,self.axis)
         minplot=np.min(img,self.axis)
