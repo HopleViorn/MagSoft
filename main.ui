@@ -883,46 +883,7 @@
               <property name="title">
                <string>Info</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
-               <item>
-                <widget class="ProfileViewer" name="verticalProfile">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>ArrowCursor</cursorShape>
-                 </property>
-                 <property name="mouseTracking">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Analysis</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="ProfileViewer" name="horizontalProfile">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>ArrowCursor</cursorShape>
-                 </property>
-                 <property name="mouseTracking">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Analysis</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <layout class="QVBoxLayout" name="verticalLayout_8"/>
              </widget>
             </widget>
            </item>
@@ -999,11 +960,6 @@
   <customwidget>
    <class>MainViewer</class>
    <extends>QGraphicsView</extends>
-   <header>widgets.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ProfileViewer</class>
-   <extends>QLabel</extends>
    <header>widgets.h</header>
   </customwidget>
   <customwidget>

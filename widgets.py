@@ -786,6 +786,7 @@ class ProfileChart(QChartView):
         super(ProfileChart, self).__init__(parent)
         self.chart = QChart()               # 创建 chart
         self.chart.legend().setAlignment(Qt.AlignRight)
+        self.chart.setTitle(["Horizontal Profile","Vertical Profile"][self.axis])
         self.setChart(self.chart)
 
         self.setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
@@ -835,7 +836,7 @@ class ProfileChart(QChartView):
         w=img.shape[1-self.axis]
 
         self.chart.axisX().setRange(0,w)
-        self.chart.axisY().setRange(0,255)
+        self.chart.axisY().setRange(np.min(variables.mag_lut),np.max(variables.mag_lut))
         mean=np.mean(img,axis=self.axis)
         maxi=np.max(img,axis=self.axis)
         minn=np.min(img,axis=self.axis)
@@ -871,12 +872,10 @@ class ProfileChart(QChartView):
 
 class HorizontalChart(ProfileChart):
     def __init__(self, parent=None):
-        super(HorizontalChart, self).__init__(parent)
         self.axis=0
-        self.chart.setTitle(["Horizontal Profile","Vertical Profile"][self.axis])
+        super(HorizontalChart, self).__init__(parent)
 
 class VerticalChart(ProfileChart):
     def __init__(self, parent=None):
-        super(VerticalChart, self).__init__(parent)
         self.axis=1
-        self.chart.setTitle(["Horizontal Profile","Vertical Profile"][self.axis])
+        super(VerticalChart, self).__init__(parent)
