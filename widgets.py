@@ -361,7 +361,7 @@ class ProfileViewer(ImgView):
         if variables.profile_area is not None:
             l,r,u,d=variables.profile_area.getBox()
             if r>l and d>u:
-                self.work.setNuclear(self.profile[u:d,l:r],self.width(),self.height())
+                self.work.setNuclear(self.profile[u:min(d,self.profile.shape[0]),l:min(r,self.profile.shape[1])],self.width(),self.height())
             else:
                 self.work.setNuclear(np.zeros((1,1)).astype(np.uint8),self.width(),self.height())
         else:
@@ -773,6 +773,8 @@ class SeriesThread(QtCore.QThread):
         self.finish.emit(series)
 
 
+import scipy
+
 class ProfileChart(QChartView):
     def new_line(self,name):
         series=QLineSeries()
@@ -808,10 +810,28 @@ class ProfileChart(QChartView):
         self.chart.setAxisX(axisX, self.series2)    # 为序列series0设置坐标轴
         self.chart.setAxisY(axisY, self.series2)
 
-        self.verticalLine = QtWidgets.QGraphicsLineItem(self.chart)   # 创建竖线
+        blackPen=self.chart.axisY().linePen()
+        blackPen.setColor(QColor(255,0,0))
+
+        self.verticalLine = QtWidgets.QGraphicsLineItem(self.chart)
         self.verticalLine.setPen(self.chart.axisY().linePen())
+
+        self.maximaLine = QtWidgets.QGraphicsLineItem(self.chart)
+        self.maximaLine.setPen(blackPen)
+
+        self.maximaMark=QtWidgets.QGraphicsTextItem(self.chart)
+        self.maximaMark.setDefaultTextColor(QColor(255,0,0))
+
+        self.minimaLine = QtWidgets.QGraphicsLineItem(self.chart)
+        self.minimaLine.setPen(blackPen)
+
+        self.minimaMark=QtWidgets.QGraphicsTextItem(self.chart)
+        self.minimaMark.setDefaultTextColor(QColor(255,0,0))
+
         
         self.scene().addItem(self.verticalLine)
+        self.scene().addItem(self.maximaLine)
+        self.scene().addItem(self.minimaLine)
 
         self.setMouseTracking(True)
 
@@ -822,14 +842,17 @@ class ProfileChart(QChartView):
     def updateProfile(self):
         if variables.profile_area is not None:
             l,r,u,d=variables.profile_area.getBox()
+            l=min(l,self.profile.shape[1])
+            r=min(r,self.profile.shape[1])
+            u=min(u,self.profile.shape[0])
+            d=min(d,self.profile.shape[0])
         else:
             l,r,u,d=1,0,1,0
+            
         if r>l and d>u:
             img=self.profile[u:d,l:r]
-            self.xlim=r-l
         else:
             img=np.zeros((1,1)).astype(np.uint8)
-            self.xlim=0
             
         img=variables.mag_lut[img]
 
@@ -841,15 +864,50 @@ class ProfileChart(QChartView):
         maxi=np.max(img,axis=self.axis)
         minn=np.min(img,axis=self.axis)
 
-        self.series0.replace([QPointF(i*variables.mm_per_pix,mean[i]) for i in range(0,w)])
-        self.series1.replace([QPointF(i*variables.mm_per_pix,maxi[i]) for i in range(0,w)])
-        self.series2.replace([QPointF(i*variables.mm_per_pix,minn[i]) for i in range(0,w)])
+        # n=10
+        # mean=np.convolve(mean,np.ones((n,))/n,mode='valid')
+        if len(mean) > 31:
+            mean=scipy.signal.savgol_filter(mean,31,3) 
+            maxi=scipy.signal.savgol_filter(maxi,31,3)
+            minn=scipy.signal.savgol_filter(minn,31,3)
+
+        self.series0.replace([QPointF(i*variables.mm_per_pix,mean[i]) for i in range(0,len(mean))])
+        self.series1.replace([QPointF(i*variables.mm_per_pix,maxi[i]) for i in range(0,len(maxi))])
+        self.series2.replace([QPointF(i*variables.mm_per_pix,minn[i]) for i in range(0,len(minn))])
+
+        maxima=np.max(mean)
+        maxpos=np.argmax(mean)*variables.mm_per_pix
+        minima=np.min(mean)
+        minpos=np.argmin(mean)*variables.mm_per_pix
+        minima=np.min(mean)
+
+
+        self.maximaMark.setPlainText('MAX : {:.2f}'.format(maxima))
+        self.minimaMark.setPlainText('MIN : {:.2f}'.format(minima))
+
+        maximaPoint=self.chart.mapToPosition(QPointF(maxpos,maxima))
+        minimaPoint=self.chart.mapToPosition(QPointF(minpos,minima))
+        self.maximaMark.setPos(maximaPoint)
+        self.minimaMark.setPos(minimaPoint)
+        # self.maximaLine.setLine(self.chart.plotArea().left(), maximaPoint.y(), self.chart.plotArea().right(),maximaPoint.y())
+        # self.minimaLine.setLine(self.chart.plotArea().left(), minimaPoint.y(), self.chart.plotArea().right(),minimaPoint.y())
+
+        if isinstance(variables.profile_area, RectArea):
+            self.series1.show()
+            self.series2.show()
+            self.mark1.show()
+            self.mark2.show()
+        else:
+            self.series1.hide()
+            self.series2.hide()
+            self.mark1.hide()
+            self.mark2.hide()
 
     def mouseMoveEvent(self, event):
         pos = event.localPos()
         chart_value = self.chart.mapToValue(QPointF(pos))
         x_value = chart_value.x()
-        if x_value < 0 or x_value > self.xlim:
+        if x_value < 0 or x_value > self.chart.axisX().max():
             return
 
         point0 = QPointF(x_value, self.series0.at(x_value).y())
@@ -862,11 +920,11 @@ class ProfileChart(QChartView):
         self.verticalLine.setLine(back0.x(), self.chart.plotArea().top(), back0.x(), self.chart.plotArea().bottom())
 
         self.mark0.setPos(back0)
-        self.mark0.setPlainText(str(point0.y()))
         self.mark1.setPos(back1)
-        self.mark1.setPlainText(str(point1.y()))
         self.mark2.setPos(back2)
-        self.mark2.setPlainText(str(point2.y()))
+        self.mark0.setPlainText('{:.2f}'.format(point0.y()))
+        self.mark1.setPlainText('{:.2f}'.format(point1.y()))
+        self.mark2.setPlainText('{:.2f}'.format(point2.y()))
 
         super(ProfileChart, self).mouseMoveEvent(event)
 

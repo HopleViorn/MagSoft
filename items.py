@@ -282,7 +282,7 @@ class CalibrationLine():
 
     def getDouble(self):
         from MagSoft import main_ui
-        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Actual Length(mm):", 0, 0, 100000, 2)
+        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Actual Length(μm):", 0, 0, 100000, 4)
         if okPressed:
             return d
 

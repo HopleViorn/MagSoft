@@ -73,10 +73,13 @@ def loadScreenshot():
     openfile_name = QtWidgets.QFileDialog.getOpenFileName(main_ui,'Select File','.','image file (*.png)')
     if openfile_name[0] != '':
         print('load from {}'.format(openfile_name))
-        img=cv_imread(openfile_name[0])
-        img = img[:,:,0]
-        #TODO: img process
+        img=cv_imread(openfile_name[0]).astype(np.float32)
+        img = img[:,:,0]+img[:,:,1]+img[:,:,2]
+        img = (img/3).astype(np.uint8)
+        main_ui.toupcamwidget.closeCamera()
         main_ui.graphicsView.scene.setImage(img)
+        import os
+        main_ui.captureList.addCapture(img,os.path.basename(openfile_name[0]))
 
 from PyQt5.QtGui import QImage,QPainter,QColor
 from PyQt5.QtCore import QRectF
@@ -147,6 +150,7 @@ def setUpTrigger():
     main_ui.graphicsView.lengthCaliChanged.connect(lengthChanged)
 
     main_ui.captureList.selectImg.connect(main_ui.graphicsView.scene.setImage)
+    main_ui.captureList.selectImg.connect(main_ui.toupcamwidget.closeCamera)
     main_ui.toupcamwidget.captured.connect(main_ui.captureList.addCapture)
 
     main_ui.initBtn.clicked.connect(main_ui.graphicsView.onInitialize)

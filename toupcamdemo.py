@@ -3,22 +3,53 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QTimer, QSignalBlocker, Qt
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QCheckBox, QMessageBox, QPushButton, QComboBox, QSlider, QGroupBox, QGridLayout, QBoxLayout, QHBoxLayout, QVBoxLayout, QMenu, QAction
 from PyQt5 import QtCore, QtGui
+import variables
 
 import numpy as np
 import copy
+import cv2
+import math
 
-nuclear=np.zeros((1,1),dtype=np.float16)
-def accumulate(img):
+nuclear=np.zeros((1,1),dtype=np.uint32)
+last_frame=np.zeros((1,1),dtype=np.uint32)
+count=0
+def multiframe(img):
+    if variables.frame_count<=1:
+        return img
+    
     global nuclear
-    k=0.99
-    img=img.astype(np.float16)
-    nuclear=nuclear*k+img*(1-k)
-    return nuclear
+    global count
+    global last_frame
+
+    if nuclear.shape != img.shape:
+        nuclear=np.zeros(img.shape,dtype=np.uint32)
+        count=0
+
+    nuclear=nuclear+img
+    count=count+1
+    if count >= variables.frame_count:
+        last_frame=copy.deepcopy(nuclear).astype(np.float32)/count
+        nuclear=np.zeros(img.shape,dtype=np.uint32)
+        count=0
+    return last_frame.astype(np.uint8)
+
+accumulate_frame=np.zeros((1,1),dtype=np.uint8)
+def accumulate(img):
+    if variables.accu_k < 0.1:
+        return img
+    global accumulate_frame
+    if accumulate_frame.shape != img.shape:
+        accumulate_frame=np.zeros(img.shape,dtype=np.uint8)
+    k=variables.accu_k
+    img=img.astype(np.uint8)
+    accumulate_frame=cv2.addWeighted(accumulate_frame, k, img, 1-k, 0)
+    return accumulate_frame
 
 def get_grey(img):
     img=img.astype(np.uint16)
     r=(img[:,:,0]+img[:,:,1]+img[:,:,2])/3
-    # r=accumulate(r)
+    r=accumulate(r)
+    r=multiframe(r)
     return r.astype(np.uint8)
 
 class ConvertThread(QtCore.QThread):
@@ -123,34 +154,56 @@ class ToupCamWidget(QWidget):
         vlytwb.addWidget(self.btn_autoWB)
         gboxwb.setLayout(vlytwb)
 
+        gboxds = QGroupBox("Denoising")
+        self.lbl_frame_count = QLabel(str('0 frames'))
+        self.slider_frame = QSlider(Qt.Horizontal)
+        self.slider_frame.setRange(0, 20)
+        self.slider_frame.setValue(0)
+        self.slider_frame.setEnabled(False)
+
+        self.lbl_accumulate = QLabel(str('0.0 %'))
+        self.slider_accumualate = QSlider(Qt.Horizontal)
+        self.slider_accumualate.setRange(0, 999)
+        self.slider_accumualate.setValue(0)
+        self.slider_accumualate.setEnabled(False)
+
+        self.slider_temp.valueChanged.connect(self.onWBTemp)
+        self.slider_tint.valueChanged.connect(self.onWBTint)
+
+        def onFrameChange(val):
+            self.lbl_frame_count.setText('{} frames'.format(val))
+            variables.frame_count=val
+        def onAccuChange(val):
+            k=1-10**(-val*3/1000)
+            self.lbl_accumulate.setText('{:.2f} %'.format(k*100))
+            variables.accu_k=k
+
+        self.slider_frame.valueChanged.connect(onFrameChange)
+        self.slider_accumualate.valueChanged.connect(onAccuChange)
+
+        vlytds = QVBoxLayout()
+        vlytds.addLayout(self.makeLayout(QLabel("Accumulating:"), self.slider_accumualate, self.lbl_accumulate,QLabel("Multiframe:"), self.slider_frame, self.lbl_frame_count, ))
+        gboxds.setLayout(vlytds)
+
+
         self.btn_open = QPushButton("Open")
         self.btn_open.clicked.connect(self.onBtnOpen)
         self.btn_snap = QPushButton("Snap")
-        # self.btn_snap.setEnabled(False)
-        # self.btn_snap.clicked.connect(self.onBtnSnap)
         vlytctrl = QVBoxLayout()
         vlytctrl.addWidget(gboxres)
         vlytctrl.addWidget(gboxexp)
         vlytctrl.addWidget(gboxwb)
+        vlytctrl.addWidget(gboxds)
         vlytctrl.addWidget(self.btn_open)
-        # vlytctrl.addWidget(self.btn_snap)
         vlytctrl.addStretch()
         wgctrl = QWidget()
         wgctrl.setLayout(vlytctrl)
 
         self.lbl_frame = QLabel()
         self.lbl_video = QLabel()
-        # vlytshow = QVBoxLayout()
-        # vlytshow.addWidget(self.lbl_video, 1)
-        # vlytshow.addWidget(self.lbl_frame)
-        # wgshow = QWidget()
-        # wgshow.setLayout(vlytshow)
 
         gmain = QGridLayout()
-        # gmain.setColumnStretch(0, 1)
-        # gmain.setColumnStretch(1, 4)
         gmain.addWidget(wgctrl)
-        # gmain.addWidget(wgshow)
         self.setLayout(gmain)
 
         self.timer.timeout.connect(self.onTimer)
@@ -176,6 +229,8 @@ class ToupCamWidget(QWidget):
         self.btn_autoWB.setEnabled(False)
         self.slider_temp.setEnabled(False)
         self.slider_tint.setEnabled(False)
+        self.slider_frame.setEnabled(False)
+        self.slider_accumualate.setEnabled(False)
         self.btn_snap.setEnabled(False)
         self.cmb_res.setEnabled(False)
         self.cmb_res.clear()
@@ -236,7 +291,7 @@ class ToupCamWidget(QWidget):
     def startCamera(self):
         self.pData = bytes(toupcam.TDIBWIDTHBYTES(self.imgWidth * 24) * self.imgHeight)
         uimin, uimax, uidef = self.hcam.get_ExpTimeRange()
-        self.slider_expoTime.setRange(uimin, 30000)
+        self.slider_expoTime.setRange(uimin, min(100000,uimax))
         self.slider_expoTime.setValue(uidef)
         usmin, usmax, usdef = self.hcam.get_ExpoAGainRange()
         self.slider_expoGain.setRange(usmin, usmax)
@@ -257,6 +312,8 @@ class ToupCamWidget(QWidget):
             self.slider_tint.setEnabled(self.cur.model.flag & toupcam.TOUPCAM_FLAG_MONO == 0)
             self.btn_open.setText("Close")
             self.btn_snap.setEnabled(True)
+            self.slider_frame.setEnabled(True)
+            self.slider_accumualate.setEnabled(True)
             bAuto = self.hcam.get_AutoExpoEnable()
             self.cbox_auto.setChecked(1 == bAuto)
             self.timer.start(1000)

@@ -41,7 +41,7 @@ def add_length_point(pix,l):
     global length_cali_model
     n_row=length_cali_model.rowCount()
     length_cali_model.setItem(n_row,0, QtGui.QStandardItem('{:.4f}'.format(pix)))
-    length_cali_model.setItem(n_row,1, QtGui.QStandardItem('{:.4f}'.format(l)))
+    length_cali_model.setItem(n_row,1, QtGui.QStandardItem('{:.4f}'.format(l*1000)))
 
 mag_cali_model=None
 mag_cali_array=np.zeros((0,2))
@@ -68,6 +68,9 @@ resolution=(1,1)
 currentTab=1
 
 color_map=cv2.COLORMAP_JET
+
+frame_count=0
+accu_k=0
 
 def setCurrentTab(tab):
     global currentTab
