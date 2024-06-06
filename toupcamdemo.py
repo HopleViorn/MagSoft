@@ -24,6 +24,9 @@ def multiframe(img):
     if nuclear.shape != img.shape:
         nuclear=np.zeros(img.shape,dtype=np.uint32)
         count=0
+    if last_frame.shape != img.shape:
+        last_frame=img
+        count=0
 
     nuclear=nuclear+img
     count=count+1
@@ -154,10 +157,10 @@ class ToupCamWidget(QWidget):
         vlytwb.addWidget(self.btn_autoWB)
         gboxwb.setLayout(vlytwb)
 
-        gboxds = QGroupBox("Denoising")
+        gboxds = QGroupBox("Temporal Filter")
         self.lbl_frame_count = QLabel(str('0 frames'))
         self.slider_frame = QSlider(Qt.Horizontal)
-        self.slider_frame.setRange(0, 20)
+        self.slider_frame.setRange(0, 60)
         self.slider_frame.setValue(0)
         self.slider_frame.setEnabled(False)
 

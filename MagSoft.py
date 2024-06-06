@@ -207,9 +207,9 @@ def setUpTrigger():
 
 
 if __name__ == '__main__':
-    QtCore.QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling,True)  
-    QtCore.QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps,True)
-    QtGui.QGuiApplication.setAttribute(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough,True)  
+    # QtCore.QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling,True)  
+    # QtCore.QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps,True)
+    # QtGui.QGuiApplication.setAttribute(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough,True)  
     toupcam.Toupcam.GigeEnable(None, None)
     app = QApplication(sys.argv)
     main_ui=MainUI()

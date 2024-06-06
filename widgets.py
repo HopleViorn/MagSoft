@@ -97,13 +97,11 @@ class GraphicCalcThread(QtCore.QThread):
 
     def run(self):
         der=variables.get_derivated_img(self.img)
-        delta=der.max()
         amax=variables.mag_lut.max()
         amin=variables.mag_lut.min()
         if self.maglut:
             mag=variables.mag_lut[der]
             mag=(mag-amin)/(amax-amin)*255
-
             mag=mag.astype(np.uint8)
         else:
             mag=der
