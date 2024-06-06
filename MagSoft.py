@@ -44,13 +44,13 @@ class LengthDialog(QDialog, lengthUI):
 main_ui=None
 
 def lengthChanged():
-    main_ui.horizontalProfile.updateProfile()
-    main_ui.verticalProfile.updateProfile()
+    main_ui.horizontalChart.updateProfile()
+    main_ui.verticalChart.updateProfile()
     main_ui.length_info.UpdateText()
 
 def magChanged():
-    main_ui.horizontalProfile.updateProfile()
-    main_ui.verticalProfile.updateProfile()
+    main_ui.horizontalChart.updateProfile()
+    main_ui.verticalChart.updateProfile()
 
 def loadCalibrationFile():
     openfile_name = QtWidgets.QFileDialog.getOpenFileName(main_ui,'Select File','.','calibration file (*.mcfg)')
@@ -140,14 +140,6 @@ def setUpTrigger():
     lengthcali_ui.calibration_length.clicked.connect(draw_cali_len)
     magcali_ui.calibration_mag.clicked.connect(draw_cali_mag)
 
-    main_ui.horizontalProfile.axis=0
-    main_ui.horizontalProfile.work.axis=0
-    main_ui.verticalProfile.axis=1
-    main_ui.verticalProfile.work.axis=1
-
-    main_ui.graphicsView.scene.frameUpdate.connect(main_ui.verticalProfile.setProfile)
-    main_ui.graphicsView.scene.frameUpdate.connect(main_ui.horizontalProfile.setProfile)
-
     main_ui.graphicsView.scene.frameUpdate.connect(main_ui.horizontalChart.setProfile)
     main_ui.graphicsView.scene.frameUpdate.connect(main_ui.verticalChart.setProfile)
    
@@ -166,9 +158,9 @@ def setUpTrigger():
 
     main_ui.graphicsView.scene.frameUpdate.connect(main_ui.videoInfo.UpdateText)
 
-    main_ui.profileTab.currentChanged.connect(variables.setCurrentTab)
-    main_ui.profileTab.currentChanged.connect(main_ui.verticalProfile.updateProfile)
-    main_ui.profileTab.currentChanged.connect(main_ui.horizontalProfile.updateProfile)
+    # main_ui.profileTab.currentChanged.connect(variables.setCurrentTab)
+    # main_ui.profileTab.currentChanged.connect(main_ui.verticalProfile.updateProfile)
+    # main_ui.profileTab.currentChanged.connect(main_ui.horizontalProfile.updateProfile)
 
 
     main_ui.setupLength.clicked.connect((lambda: lengthcali_ui.show()))
