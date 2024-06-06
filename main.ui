@@ -885,6 +885,25 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_8">
                <item>
+                <widget class="ProfileViewer" name="verticalProfile">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="cursor">
+                  <cursorShape>ArrowCursor</cursorShape>
+                 </property>
+                 <property name="mouseTracking">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>Analysis</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="ProfileViewer" name="horizontalProfile">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -916,7 +935,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="HorizonTab">
               <attribute name="title">
@@ -924,7 +943,7 @@
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_2">
                <item>
-                <widget class="TestChart" name="profileChart"/>
+                <widget class="HorizontalChart" name="horizontalChart"/>
                </item>
               </layout>
              </widget>
@@ -934,23 +953,7 @@
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_3">
                <item>
-                <widget class="ProfileViewer" name="verticalProfile">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>ArrowCursor</cursorShape>
-                 </property>
-                 <property name="mouseTracking">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Analysis</string>
-                 </property>
-                </widget>
+                <widget class="VerticalChart" name="verticalChart"/>
                </item>
               </layout>
              </widget>
@@ -1029,7 +1032,12 @@
    <header>widgets.h</header>
   </customwidget>
   <customwidget>
-   <class>TestChart</class>
+   <class>HorizontalChart</class>
+   <extends>QGraphicsView</extends>
+   <header>widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>VerticalChart</class>
    <extends>QGraphicsView</extends>
    <header>widgets.h</header>
   </customwidget>

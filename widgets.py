@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPainter,QPen,QPixmap,QImage,QColor
 from PyQt5.QtChart import QChartView,QChart,QLineSeries,QValueAxis
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtCore import QRectF
+from PyQt5.QtCore import QRectF,QPointF
 from PyQt5.Qt import Qt
 import cv2
 import toupcam
@@ -668,36 +668,215 @@ class CurveTable(QtWidgets.QTableView):
 
         self.curveChanged.emit()
 
-import math
-class TestChart(QChartView):
-    def __init__(self,parent):
-        super(TestChart, self).__init__(parent)
-        chart = QChart()               #创建 chart
-        chart.setTitle("简单函数曲线")
-        chartView=self   #创建 chartView
-        chartView.setChart(chart)      #chart添加到chartView
-        series0 = QLineSeries()
-        series1 = QLineSeries()
-        series0.setName("Sin曲线")
-        series1.setName("Cos曲线")
-        chart.addSeries(series0)       #序列添加到图表
-        chart.addSeries(series1)
-        t=0
-        intv=0.1
-        pointCount=100
-        for i in range(pointCount):
-            y1=math.cos(t) 
-            series0.append(t,y1)
-            y2=1.5*math.sin(t+20)
-            series1.append(t,y2)
-            t=t+intv
-        axisX = QValueAxis()      #x轴
-        axisX.setRange(0, 10)     #设置坐标轴范围
-        axisX.setTitleText("time(secs)")    #轴标题
-        axisY = QValueAxis()      #y轴
-        axisY.setRange(-2, 2)
-        axisY.setTitleText("value")
-        chart.setAxisX(axisX, series0)    #为序列series0设置坐标轴
-        chart.setAxisY(axisY, series0)
-        chart.setAxisX(axisX, series1)    #为序列series1设置坐标轴
-        chart.legend().setAlignment(Qt.AlignRight)
+class ProfileCalcThread(QtCore.QThread):
+    finish = QtCore.pyqtSignal(object)
+    def __init__(self,axis,width,height):
+        super().__init__()
+        self.profile=np.zeros((1,1)).astype(np.uint8) 
+        self.axis=axis
+        self.width=width
+        self.height=height
+
+    def __del__(self):
+        self.wait()
+
+    def setNuclear(self,profile,width,height):
+        self.profile=profile
+        self.width=width
+        self.height=height
+
+    def run(self):
+        img=self.profile
+        img=variables.mag_lut[img]
+        buffer_ = BytesIO()
+        maxplot=np.max(img,self.axis)
+        minplot=np.min(img,self.axis)
+        avgplot=np.mean(img,self.axis)
+        l=len(maxplot)
+        xlist=[i*variables.mm_per_pix for i in range(l)]
+
+        mux.lock()
+        plt.figure(figsize=(self.width/100,self.height/100))
+        plt.subplots_adjust(right=0.8)
+        plt.subplots_adjust(bottom=0.3)
+        
+        l1=plt.plot(xlist,maxplot,label='Maxima')
+        l2=plt.plot(xlist,minplot,label='Minima')
+        l3=plt.plot(xlist,avgplot,label='Average')
+        title=['Horizontal','Vertical'][self.axis]
+        plt.title(title+' Profile')
+
+        plt.legend(bbox_to_anchor=(1.02, 0),loc='lower left')
+
+        plt.xlabel('Width (mm)')
+        plt.ylabel('Field (mT)')
+
+        plt.savefig(buffer_,format = 'png')
+        plt.close()
+        mux.unlock()
+
+        buffer_.seek(0)
+        dataPIL = PIL.Image.open(buffer_).convert('RGB')
+        data = np.asarray(dataPIL)
+        buffer_.close()
+        self.finish.emit(data)
+
+class ProfileViewer(ImgView):
+    def __init__(self,parent,axis=0):
+        super(ProfileViewer,self).__init__(parent)
+        self.axis=axis
+
+        self.work=ProfileCalcThread(self.axis,self.width(),self.height())
+        self.work.finish.connect(self.callback)
+        
+        self.setProfile(None)
+
+    def setProfile(self,img):
+        self.profile=np.zeros((1,1)).astype(np.uint8) if img is None else img
+        self.updateProfile()
+    
+    def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
+        self.updateProfile()
+        return super().resizeEvent(a0)
+
+    def callback(self,img):
+        self.setImage(img)
+
+    def updateProfile(self):
+        if variables.profile_area is not None:
+            l,r,u,d=variables.profile_area.getBox()
+            if r>l and d>u:
+                self.work.setNuclear(self.profile[u:d,l:r],self.width(),self.height())
+            else:
+                self.work.setNuclear(np.zeros((1,1)).astype(np.uint8),self.width(),self.height())
+        else:
+            self.work.setNuclear(np.zeros((1,1)).astype(np.uint8),self.width(),self.height())
+        if variables.currentTab==self.axis:
+            self.work.start()
+
+class SeriesThread(QtCore.QThread):
+    finish = QtCore.pyqtSignal(object)
+    def __init__(self):
+        super().__init__()
+        self.data=np.array([])
+
+    def setData(self,data):
+        self.data=data
+
+    def __del__(self):
+        self.wait()
+    
+    def run(self):
+        series=QLineSeries()
+        for i in range(len(self.data)):
+            series.append(i,self.data[i])
+        self.finish.emit(series)
+
+
+class ProfileChart(QChartView):
+    def new_line(self,name):
+        series=QLineSeries()
+        series.setName(name)
+        self.chart.addSeries(series)
+        mark=QtWidgets.QGraphicsTextItem(self.chart)
+        mark.setDefaultTextColor(series.color())
+        return series,mark
+
+    def __init__(self, parent=None):
+        super(ProfileChart, self).__init__(parent)
+        self.chart = QChart()               # 创建 chart
+        self.chart.legend().setAlignment(Qt.AlignRight)
+        self.setChart(self.chart)
+
+        self.setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
+        self.profile=np.zeros((1,1)).astype(np.uint8)
+        self.xlim=0
+
+        self.series0,self.mark0=self.new_line('Mean')
+        self.series1,self.mark1=self.new_line('Maxima')
+        self.series2,self.mark2=self.new_line('Minima')
+
+        axisX = QValueAxis()      # x轴
+        axisX.setTitleText("Width (mm)")
+        axisY = QValueAxis()      # y轴
+        axisY.setTitleText("Field (mT)")    # 轴标题
+        self.chart.setAxisX(axisX, self.series0)    # 为序列series0设置坐标轴
+        self.chart.setAxisY(axisY, self.series0)
+        self.chart.setAxisX(axisX, self.series1)    # 为序列series0设置坐标轴
+        self.chart.setAxisY(axisY, self.series1)
+        self.chart.setAxisX(axisX, self.series2)    # 为序列series0设置坐标轴
+        self.chart.setAxisY(axisY, self.series2)
+
+        self.verticalLine = QtWidgets.QGraphicsLineItem(self.chart)   # 创建竖线
+        self.verticalLine.setPen(self.chart.axisY().linePen())
+        
+        self.scene().addItem(self.verticalLine)
+
+        self.setMouseTracking(True)
+
+    def setProfile(self,img):
+        self.profile=np.zeros((1,1)).astype(np.uint8) if img is None else img
+        self.updateProfile()
+    
+    def updateProfile(self):
+        if variables.profile_area is not None:
+            l,r,u,d=variables.profile_area.getBox()
+        else:
+            l,r,u,d=1,0,1,0
+        if r>l and d>u:
+            img=self.profile[u:d,l:r]
+            self.xlim=r-l
+        else:
+            img=np.zeros((1,1)).astype(np.uint8)
+            self.xlim=0
+            
+        img=variables.mag_lut[img]
+
+        w=img.shape[1-self.axis]
+
+        self.chart.axisX().setRange(0,w)
+        self.chart.axisY().setRange(0,255)
+        mean=np.mean(img,axis=self.axis)
+        maxi=np.max(img,axis=self.axis)
+        minn=np.min(img,axis=self.axis)
+
+        self.series0.replace([QPointF(i*variables.mm_per_pix,mean[i]) for i in range(0,w)])
+        self.series1.replace([QPointF(i*variables.mm_per_pix,maxi[i]) for i in range(0,w)])
+        self.series2.replace([QPointF(i*variables.mm_per_pix,minn[i]) for i in range(0,w)])
+
+    def mouseMoveEvent(self, event):
+        pos = event.localPos()
+        chart_value = self.chart.mapToValue(QPointF(pos))
+        x_value = chart_value.x()
+        if x_value < 0 or x_value > self.xlim:
+            return
+
+        point0 = QPointF(x_value, self.series0.at(x_value).y())
+        point1 = QPointF(x_value, self.series1.at(x_value).y())
+        point2 = QPointF(x_value, self.series2.at(x_value).y())
+
+        back0=self.chart.mapToPosition(QPointF(point0))
+        back1=self.chart.mapToPosition(QPointF(point1))
+        back2=self.chart.mapToPosition(QPointF(point2))
+        self.verticalLine.setLine(back0.x(), self.chart.plotArea().top(), back0.x(), self.chart.plotArea().bottom())
+
+        self.mark0.setPos(back0)
+        self.mark0.setPlainText(str(point0.y()))
+        self.mark1.setPos(back1)
+        self.mark1.setPlainText(str(point1.y()))
+        self.mark2.setPos(back2)
+        self.mark2.setPlainText(str(point2.y()))
+
+        super(ProfileChart, self).mouseMoveEvent(event)
+
+class HorizontalChart(ProfileChart):
+    def __init__(self, parent=None):
+        super(HorizontalChart, self).__init__(parent)
+        self.axis=0
+        self.chart.setTitle(["Horizontal Profile","Vertical Profile"][self.axis])
+
+class VerticalChart(ProfileChart):
+    def __init__(self, parent=None):
+        super(VerticalChart, self).__init__(parent)
+        self.axis=1
+        self.chart.setTitle(["Horizontal Profile","Vertical Profile"][self.axis])

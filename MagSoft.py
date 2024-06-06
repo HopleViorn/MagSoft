@@ -148,6 +148,8 @@ def setUpTrigger():
     main_ui.graphicsView.scene.frameUpdate.connect(main_ui.verticalProfile.setProfile)
     main_ui.graphicsView.scene.frameUpdate.connect(main_ui.horizontalProfile.setProfile)
 
+    main_ui.graphicsView.scene.frameUpdate.connect(main_ui.horizontalChart.setProfile)
+    main_ui.graphicsView.scene.frameUpdate.connect(main_ui.verticalChart.setProfile)
    
     main_ui.graphicsView.magCaliChanged.connect(magChanged)
     main_ui.graphicsView.lengthCaliChanged.connect(lengthChanged)
@@ -209,10 +211,6 @@ def setUpTrigger():
 
 
 if __name__ == '__main__':
-
-    variables.rgb_mt.append(DummyRect(avg=0,md=0))
-    variables.rgb_mt.append(DummyRect(avg=256,md=999))
-
     QtCore.QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling,True)  
     QtCore.QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps,True)
     QtGui.QGuiApplication.setAttribute(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough,True)  
