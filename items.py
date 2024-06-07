@@ -213,14 +213,14 @@ class MeasureLine():
         self.secLine0=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.secLine1=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.text=QtWidgets.QGraphicsTextItem('length:{}'.format(0))
-        self.text.setDefaultTextColor(Qt.white)
+        self.text.setDefaultTextColor(Qt.black)
         font = QtGui.QFont()
         font.setPointSize(variables.get_font_width())
         self.text.setFont(font)
         
-        self.mainLine.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
-        self.secLine0.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
-        self.secLine1.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
+        self.mainLine.setPen(QPen(Qt.black, variables.get_line_width(), Qt.DashLine))
+        self.secLine0.setPen(QPen(Qt.black, variables.get_line_width(), Qt.DashLine))
+        self.secLine1.setPen(QPen(Qt.black, variables.get_line_width(), Qt.DashLine))
 
         self.items=[self.mainLine,self.secLine0,self.secLine1,self.text]
         for item in self.items:
@@ -451,11 +451,11 @@ class MeasureAngle():
         self.line0=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.line1=QtWidgets.QGraphicsLineItem(0,0,0,0)
 
-        self.line0.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
-        self.line1.setPen(QPen(Qt.white, variables.get_line_width(), Qt.DashLine))
+        self.line0.setPen(QPen(Qt.black, variables.get_line_width(), Qt.DashLine))
+        self.line1.setPen(QPen(Qt.black, variables.get_line_width(), Qt.DashLine))
 
         self.text=QtWidgets.QGraphicsTextItem('angle')
-        self.text.setDefaultTextColor(Qt.white)
+        self.text.setDefaultTextColor(Qt.black)
         font = QtGui.QFont()
         font.setPointSize(variables.get_font_width())
         self.text.setFont(font)
