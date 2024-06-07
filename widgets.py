@@ -862,12 +862,10 @@ class ProfileChart(QChartView):
         maxi=np.max(img,axis=self.axis)
         minn=np.min(img,axis=self.axis)
 
-        # n=10
-        # mean=np.convolve(mean,np.ones((n,))/n,mode='valid')
-        if len(mean) > 31:
-            mean=scipy.signal.savgol_filter(mean,31,3) 
-            maxi=scipy.signal.savgol_filter(maxi,31,3)
-            minn=scipy.signal.savgol_filter(minn,31,3)
+        if len(mean) > 21 and variables.smooth is True:
+            mean=scipy.signal.savgol_filter(mean,21,3) 
+            maxi=scipy.signal.savgol_filter(maxi,21,3)
+            minn=scipy.signal.savgol_filter(minn,21,3)
 
         self.series0.replace([QPointF(i*variables.mm_per_pix,mean[i]) for i in range(0,len(mean))])
         self.series1.replace([QPointF(i*variables.mm_per_pix,maxi[i]) for i in range(0,len(maxi))])
@@ -878,7 +876,6 @@ class ProfileChart(QChartView):
         minima=np.min(mean)
         minpos=np.argmin(mean)*variables.mm_per_pix
         minima=np.min(mean)
-
 
         self.maximaMark.setPlainText('MAX : {:.2f}'.format(maxima))
         self.minimaMark.setPlainText('MIN : {:.2f}'.format(minima))
@@ -895,11 +892,15 @@ class ProfileChart(QChartView):
             self.series2.show()
             self.mark1.show()
             self.mark2.show()
+            self.minimaMark.hide()
+            self.maximaMark.hide()
         else:
             self.series1.hide()
             self.series2.hide()
             self.mark1.hide()
             self.mark2.hide()
+            self.minimaMark.show()
+            self.maximaMark.show()
 
     def mouseMoveEvent(self, event):
         pos = event.localPos()

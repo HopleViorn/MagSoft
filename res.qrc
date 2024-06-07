@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/icons8-grey-wheel-96.png</file>
     <file>icons/icons8-color-wheel-96.png</file>
     <file>icons/icons8-drafting-compass-100.png</file>
     <file>icons/icons8-line-96.png</file>

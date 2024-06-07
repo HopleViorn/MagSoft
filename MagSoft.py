@@ -128,6 +128,28 @@ def delete_cali():
         main_ui.graphicsView.clearItem(variables.cali_len)
         variables.cali_len=None
 
+def setUpProfileSettings():
+    main_ui.autoScale.setChecked(variables.auto_scale)
+    def onAutoScaleChanged():
+        variables.auto_scale=main_ui.autoScale.isChecked()
+        main_ui.verticalChart.updateProfile()
+        main_ui.horizontalChart.updateProfile()
+    main_ui.autoScale.stateChanged.connect(onAutoScaleChanged)
+
+    main_ui.showMinMax.setChecked(variables.show_min_max)
+    def onShowMinMaxChanged():
+        variables.show_min_max=main_ui.showMinMax.isChecked()
+        main_ui.verticalChart.updateProfile()
+        main_ui.horizontalChart.updateProfile()
+    main_ui.showMinMax.stateChanged.connect(onShowMinMaxChanged)
+
+    main_ui.smooth.setChecked(variables.smooth)
+    def onSmoothChanged():
+        variables.smooth=main_ui.smooth.isChecked()
+        main_ui.verticalChart.updateProfile()
+        main_ui.horizontalChart.updateProfile()
+    main_ui.smooth.stateChanged.connect(onSmoothChanged)
+
 def setUpTrigger():
     main_ui.toupcamwidget.lbl_video=main_ui.graphicsView.scene
     main_ui.toupcamwidget.btn_snap=main_ui.snap
@@ -203,6 +225,11 @@ def setUpTrigger():
 
     main_ui.saveScreenshot.clicked.connect(saveScreenshot)
     main_ui.loadScreenshot.clicked.connect(loadScreenshot)
+
+
+    main_ui.colorCombo.currentIndexChanged.connect(lambda x: main_ui.graphicsView.scene.switch_to_color() if x==0 else main_ui.graphicsView.scene.switch_to_grey())
+
+    setUpProfileSettings()
 
 
 

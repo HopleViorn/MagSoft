@@ -42,7 +42,7 @@ def accumulate(img):
         return img
     global accumulate_frame
     if accumulate_frame.shape != img.shape:
-        accumulate_frame=np.zeros(img.shape,dtype=np.uint8)
+        accumulate_frame=img.astype(np.uint8)
     k=variables.accu_k
     img=img.astype(np.uint8)
     accumulate_frame=cv2.addWeighted(accumulate_frame, k, img, 1-k, 0)

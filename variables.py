@@ -69,6 +69,14 @@ currentTab=1
 
 color_map=cv2.COLORMAP_JET
 
+Ymin=0
+Ymax=255
+Xmin=0
+Xmax=255
+show_min_max=True
+smooth=True
+auto_scale=True
+
 frame_count=0
 accu_k=0
 
