@@ -90,7 +90,8 @@ def saveScreenshot():
     savefile_name=QtWidgets.QFileDialog.getSaveFileName(main_ui, "Save File", ".", 'image file (*.png)')
     if savefile_name[0] != '':
         print('save to {}'.format(savefile_name))
-        arr = main_ui.graphicsView.scene.getScreenshot()
+        # arr = main_ui.graphicsView.scene.getScreenshot()
+        arr = main_ui.graphicsView.scene.single_img
         arr = cv2.cvtColor(arr, cv2.COLOR_RGBA2BGRA)
         cv2.imwrite(savefile_name[0], arr)
 
@@ -214,6 +215,7 @@ def setUpTrigger():
 
     main_ui.setupLength.clicked.connect((lambda: lengthcali_ui.show()))
     main_ui.setupLength.clicked.connect(main_ui.graphicsView.scene.switch_to_grey)
+    main_ui.setupLength.clicked.connect(lambda: main_ui.colorCombo.setCurrentIndex(1))
     main_ui.graphicsView.lengthCaliChanged.connect(lambda:lengthcali_ui.show())
     lengthcali_ui.lengthTable.mppChanged.connect(lengthChanged)
     lengthcali_ui.lengthTable.mppChanged.connect(lengthcali_ui.len_info.updateProfile)
@@ -223,10 +225,11 @@ def setUpTrigger():
     lengthcali_ui.OK.clicked.connect(lambda:lengthcali_ui.hide())
     lengthcali_ui.OK.clicked.connect(delete_cali)
     lengthcali_ui.OK.clicked.connect(main_ui.graphicsView.scene.switch_to_color)
+    lengthcali_ui.OK.clicked.connect(lambda: main_ui.colorCombo.setCurrentIndex(0))
 
     main_ui.setupMag.clicked.connect((lambda: magcali_ui.show()))
     main_ui.setupMag.clicked.connect(main_ui.graphicsView.scene.switch_to_grey)
-
+    main_ui.setupMag.clicked.connect(lambda: main_ui.colorCombo.setCurrentIndex(1))
 
     main_ui.graphicsView.magCaliChanged.connect(lambda:magcali_ui.show())
     magcali_ui.magTable.curveChanged.connect(magChanged)
@@ -238,6 +241,7 @@ def setUpTrigger():
     magcali_ui.OK.clicked.connect(lambda:magcali_ui.hide())
     magcali_ui.OK.clicked.connect(delete_cali)
     magcali_ui.OK.clicked.connect(main_ui.graphicsView.scene.switch_to_color)
+    magcali_ui.OK.clicked.connect(lambda: main_ui.colorCombo.setCurrentIndex(0))
 
     main_ui.clearMark.clicked.connect(main_ui.graphicsView.clearAll)
     main_ui.clearProfile.clicked.connect(delete_profile)

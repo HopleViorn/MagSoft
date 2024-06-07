@@ -177,7 +177,7 @@ class ToupCamWidget(QWidget):
             self.lbl_frame_count.setText('{} frames'.format(val))
             variables.frame_count=val
         def onAccuChange(val):
-            k=1-10**(-val*3/1000)
+            k=1-10**(-val*2.5/1000)
             self.lbl_accumulate.setText('{:.2f} %'.format(k*100))
             variables.accu_k=k
 

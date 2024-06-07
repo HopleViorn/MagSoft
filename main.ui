@@ -145,7 +145,7 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Load Calibration</string>
+                 <string>Load calibration</string>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -164,7 +164,7 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Save Calibration</string>
+                 <string>Save calibration</string>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -218,7 +218,7 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Background Initialization</string>
+                 <string>Background initialization</string>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -237,7 +237,7 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Length Calibration</string>
+                 <string>Length calibration</string>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -256,7 +256,7 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Magnetic Curve Calibration</string>
+                 <string>Magnetic curve calibration</string>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -281,7 +281,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Length Not Calibrated</string>
+                 <string>Length not calibrated</string>
                 </property>
                </widget>
                <widget class="InitializeLabel" name="initializeLabel">
@@ -297,7 +297,7 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Not Initialized</string>
+                 <string>Not initialized</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -720,7 +720,7 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string> Save Screenshot</string>
+                       <string>Save image</string>
                       </property>
                       <property name="iconSize">
                        <size>
@@ -742,7 +742,7 @@
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string>Load Image</string>
+                       <string>Load image</string>
                       </property>
                       <property name="iconSize">
                        <size>
@@ -1021,7 +1021,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="HorizonTab">
               <attribute name="title">

@@ -774,9 +774,9 @@ class SeriesThread(QtCore.QThread):
         maxi=np.max(img,axis=self.axis)
         minn=np.min(img,axis=self.axis)
         if len(mean) > 21 and variables.smooth is True:
-            mean=scipy.signal.savgol_filter(mean,21,3) 
-            maxi=scipy.signal.savgol_filter(maxi,21,3)
-            minn=scipy.signal.savgol_filter(minn,21,3)
+            mean=scipy.signal.savgol_filter(mean,21,2) 
+            maxi=scipy.signal.savgol_filter(maxi,21,2)
+            minn=scipy.signal.savgol_filter(minn,21,2)
         maxima=np.max(mean)
         maxpos=np.argmax(mean)*variables.mm_per_pix
         minima=np.min(mean)
@@ -807,7 +807,7 @@ class ProfileChart(QChartView):
         self.profile=np.zeros((1,1)).astype(np.uint8)
         self.xlim=0
 
-        self.series0,self.mark0=self.new_line('Mean')
+        self.series0,self.mark0=self.new_line('Average')
         self.series1,self.mark1=self.new_line('Maxima')
         self.series2,self.mark2=self.new_line('Minima')
 
@@ -839,7 +839,6 @@ class ProfileChart(QChartView):
 
         self.minimaMark=QtWidgets.QGraphicsTextItem(self.chart)
         self.minimaMark.setDefaultTextColor(QColor(255,0,0))
-
         
         self.scene().addItem(self.verticalLine)
         self.scene().addItem(self.maximaLine)
