@@ -754,22 +754,35 @@ class ProfileViewer(ImgView):
 
 class SeriesThread(QtCore.QThread):
     finish = QtCore.pyqtSignal(object)
-    def __init__(self):
+    def __init__(self,axis):
         super().__init__()
-        self.data=np.array([])
+        self.profile=np.zeros((1,1)).astype(np.uint8)
+        self.axis=axis
 
-    def setData(self,data):
-        self.data=data
+    def setProfile(self,profile):
+        self.profile=profile
 
     def __del__(self):
         self.wait()
     
     def run(self):
-        series=QLineSeries()
-        for i in range(len(self.data)):
-            series.append(i,self.data[i])
-        self.finish.emit(series)
+        img=self.profile
+        img=variables.mag_lut[img]
+        w=img.shape[1-self.axis]
 
+        mean=np.mean(img,axis=self.axis)
+        maxi=np.max(img,axis=self.axis)
+        minn=np.min(img,axis=self.axis)
+        if len(mean) > 21 and variables.smooth is True:
+            mean=scipy.signal.savgol_filter(mean,21,3) 
+            maxi=scipy.signal.savgol_filter(maxi,21,3)
+            minn=scipy.signal.savgol_filter(minn,21,3)
+        maxima=np.max(mean)
+        maxpos=np.argmax(mean)*variables.mm_per_pix
+        minima=np.min(mean)
+        minpos=np.argmin(mean)*variables.mm_per_pix
+        minima=np.min(mean)
+        self.finish.emit((mean,maxi,minn,maxima,maxpos,minima,minpos,w))
 
 import scipy
 
@@ -834,9 +847,38 @@ class ProfileChart(QChartView):
 
         self.setMouseTracking(True)
 
+        self.worker=SeriesThread(self.axis)
+        self.worker.finish.connect(self.callback)
+
     def setProfile(self,img):
         self.profile=np.zeros((1,1)).astype(np.uint8) if img is None else img
         self.updateProfile()
+
+    def callback(self,res):
+        mean,maxi,minn,maxima,maxpos,minima,minpos,w=res
+        if variables.auto_scale:
+            self.chart.axisX().setRange(0,w)
+            self.chart.axisY().setRange(np.min(variables.mag_lut),np.max(variables.mag_lut))
+            variables.Xmin=0
+            variables.Xmax=w
+            variables.Ymin=np.min(variables.mag_lut)
+            variables.Ymax=np.max(variables.mag_lut)
+            self.scaleChanged.emit((variables.Xmin,variables.Xmax,variables.Ymin,variables.Ymax))
+        else:
+            self.chart.axisX().setRange(variables.Xmin,variables.Xmax)
+            self.chart.axisY().setRange(variables.Ymin,variables.Ymax)
+
+        self.series0.replace([QPointF(i*variables.mm_per_pix,mean[i]) for i in range(0,len(mean))])
+        self.series1.replace([QPointF(i*variables.mm_per_pix,maxi[i]) for i in range(0,len(maxi))])
+        self.series2.replace([QPointF(i*variables.mm_per_pix,minn[i]) for i in range(0,len(minn))])
+
+        self.maximaMark.setPlainText('MAX : {:.2f}'.format(maxima))
+        self.minimaMark.setPlainText('MIN : {:.2f}'.format(minima))
+
+        maximaPoint=self.chart.mapToPosition(QPointF(maxpos,maxima))
+        minimaPoint=self.chart.mapToPosition(QPointF(minpos,minima))
+        self.maximaMark.setPos(maximaPoint)
+        self.minimaMark.setPos(minimaPoint)
     
     def updateProfile(self):
         if variables.profile_area is not None:
@@ -852,52 +894,10 @@ class ProfileChart(QChartView):
             img=self.profile[u:d,l:r]
         else:
             img=np.zeros((1,1)).astype(np.uint8)
+        self.worker.setProfile(img)
+        self.worker.start()
             
-        img=variables.mag_lut[img]
-
-        w=img.shape[1-self.axis]
-
-
-        if variables.auto_scale:
-            self.chart.axisX().setRange(0,w)
-            self.chart.axisY().setRange(np.min(variables.mag_lut),np.max(variables.mag_lut))
-            variables.Xmin=0
-            variables.Xmax=w
-            variables.Ymin=np.min(variables.mag_lut)
-            variables.Ymax=np.max(variables.mag_lut)
-            self.scaleChanged.emit((variables.Xmin,variables.Xmax,variables.Ymin,variables.Ymax))
-
-        else:
-            self.chart.axisX().setRange(variables.Xmin,variables.Xmax)
-            self.chart.axisY().setRange(variables.Ymin,variables.Ymax)
-
-
-        mean=np.mean(img,axis=self.axis)
-        maxi=np.max(img,axis=self.axis)
-        minn=np.min(img,axis=self.axis)
-
-        if len(mean) > 21 and variables.smooth is True:
-            mean=scipy.signal.savgol_filter(mean,21,3) 
-            maxi=scipy.signal.savgol_filter(maxi,21,3)
-            minn=scipy.signal.savgol_filter(minn,21,3)
-
-        self.series0.replace([QPointF(i*variables.mm_per_pix,mean[i]) for i in range(0,len(mean))])
-        self.series1.replace([QPointF(i*variables.mm_per_pix,maxi[i]) for i in range(0,len(maxi))])
-        self.series2.replace([QPointF(i*variables.mm_per_pix,minn[i]) for i in range(0,len(minn))])
-
-        maxima=np.max(mean)
-        maxpos=np.argmax(mean)*variables.mm_per_pix
-        minima=np.min(mean)
-        minpos=np.argmin(mean)*variables.mm_per_pix
-        minima=np.min(mean)
-
-        self.maximaMark.setPlainText('MAX : {:.2f}'.format(maxima))
-        self.minimaMark.setPlainText('MIN : {:.2f}'.format(minima))
-
-        maximaPoint=self.chart.mapToPosition(QPointF(maxpos,maxima))
-        minimaPoint=self.chart.mapToPosition(QPointF(minpos,minima))
-        self.maximaMark.setPos(maximaPoint)
-        self.minimaMark.setPos(minimaPoint)
+        
         # self.maximaLine.setLine(self.chart.plotArea().left(), maximaPoint.y(), self.chart.plotArea().right(),maximaPoint.y())
         # self.minimaLine.setLine(self.chart.plotArea().left(), minimaPoint.y(), self.chart.plotArea().right(),minimaPoint.y())
         
