@@ -5,40 +5,13 @@ from PyQt5.Qt import Qt
 import numpy as np
 import variables
 
-class DynamicRectArea(QtWidgets.QGraphicsRectItem):
-    def __init__(self,x0=0,y0=0,x1=0,y1=0):
-        super(RectArea,self).__init__(x0,y0,x1,y1)
-        self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
-        self.setPen(QPen(Qt.white, 2, Qt.DashLine))
-        # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
-        self.setVisible(False)
-        self.state=0
-    
-    def onClick(self,pos):
-        if self.state==0:
-            self.x0=pos.x()
-            self.y0=pos.y()
-            self.state=1
-            self.setRect(self.x0,self.y0,0,0)
-            self.setVisible(True)
-            return 1
-        if self.state==1:
-            return 0
-
-    def itemList(self):
-        return [self]
-
-    def onMoving(self,pos):
-        x1,y1=pos.x(),pos.y()
-        w,h=abs(x1-self.x0),abs(y1-self.y0)
-        self.setRect(min(self.x0,x1),min(self.y0,y1),w,h)
-
 class RectArea(QtWidgets.QGraphicsRectItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
         super(RectArea,self).__init__(x0,y0,x1,y1)
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
         # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        self.isDragable=True
         self.setVisible(False)
         self.state=0
     
@@ -61,6 +34,23 @@ class RectArea(QtWidgets.QGraphicsRectItem):
         self.x1,self.y1=x1,y1
         w,h=abs(x1-self.x0),abs(y1-self.y0)
         self.setRect(min(self.x0,x1),min(self.y0,y1),w,h)
+
+    def onDragging(self,pos):
+        dx,dy = pos.x(),pos.y()
+        x0=self.x0+dx
+        y0=self.y0+dy
+        x1=self.x1+dx
+        y1=self.y1+dy
+        w,h=abs(x1-x0),abs(y1-y0)
+        self.setRect(min(x0,x1),min(y0,y1),w,h)
+
+    def onFinishDrag(self,pos):
+        dx,dy = pos.x(),pos.y()
+        x0=self.x0+dx
+        y0=self.y0+dy
+        x1=self.x1+dx
+        y1=self.y1+dy
+        self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
 
     def getBox(self):
         f=lambda x:max(int(x),0)
@@ -99,6 +89,7 @@ class HorizontalLine(QtWidgets.QGraphicsLineItem):
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
         # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        self.isDragable=True
         self.setVisible(False)
         self.state=0
     
@@ -121,10 +112,36 @@ class HorizontalLine(QtWidgets.QGraphicsLineItem):
         self.y0=self.y1
         self.setLine(self.x0,self.y0,self.x1,self.y1)
 
+    def onDragging(self,pos):
+        dx,dy = pos.x(),pos.y()
+        x0=self.x0+dx
+        y0=self.y0+dy
+        x1=self.x1+dx
+        y1=self.y1+dy
+        self.setLine(x0,y0,x1,y1)
+        
+    def onFinishDrag(self,pos):
+        dx,dy = pos.x(),pos.y()
+        x0=self.x0+dx
+        y0=self.y0+dy
+        x1=self.x1+dx
+        y1=self.y1+dy
+        self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
+
     def getBox(self):
         f=lambda x:max(int(x),0)
         return f(min(self.x0,self.x1)),f(max(self.x0,self.x1)),f(min(self.y0,self.y0+1)),f(max(self.y0,self.y0+1))
-
+    
+    def shape(self):
+        path = QtGui.QPainterPath()
+        p1 = self.line().p1()
+        p2 = self.line().p2()
+        width=40
+        extra_rect = QtCore.QRectF(p1, p2).normalized().adjusted(-width, -width, width, width)
+        path.moveTo(p1)
+        path.lineTo(p2)
+        path.addRect(extra_rect)
+        return path
 
 class VerticalLine(QtWidgets.QGraphicsLineItem):
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
@@ -132,6 +149,7 @@ class VerticalLine(QtWidgets.QGraphicsLineItem):
         self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
         self.setPen(QPen(Qt.blue, variables.get_line_width(), Qt.DashLine))
         # self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+        self.isDragable=True
         self.setVisible(False)
         self.state=0
     
@@ -153,9 +171,37 @@ class VerticalLine(QtWidgets.QGraphicsLineItem):
         self.x1,self.y1=pos.x(),pos.y()
         self.x0=self.x1
         self.setLine(self.x0,self.y0,self.x1,self.y1)
+
+    def onDragging(self,pos):
+        dx,dy = pos.x(),pos.y()
+        x0=self.x0+dx
+        y0=self.y0+dy
+        x1=self.x1+dx
+        y1=self.y1+dy
+        self.setLine(x0,y0,x1,y1)
+        
+    def onFinishDrag(self,pos):
+        dx,dy = pos.x(),pos.y()
+        x0=self.x0+dx
+        y0=self.y0+dy
+        x1=self.x1+dx
+        y1=self.y1+dy
+        self.x0,self.y0,self.x1,self.y1=x0,y0,x1,y1
+
     def getBox(self):
         f=lambda x:max(int(x),0)
         return f(min(self.x0,self.x0+1)),f(max(self.x0,self.x0+1)),f(min(self.y0,self.y1)),f(max(self.y0,self.y1))
+    
+    def shape(self):
+        path = QtGui.QPainterPath()
+        p1 = self.line().p1()
+        p2 = self.line().p2()
+        width=40
+        extra_rect = QtCore.QRectF(p1, p2).normalized().adjusted(-width, -width, width, width)
+        path.moveTo(p1)
+        path.lineTo(p2)
+        path.addRect(extra_rect)
+        return path
 
 class MeasureLine():
     def __init__(self,x0=0,y0=0,x1=0,y1=0):
@@ -376,7 +422,7 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
 
     def getDouble(self):
         from MagSoft import main_ui
-        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Magfield Strength (mT):", 0, 0, 100000, 2)
+        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Magfield Strength (mT):", 0, -100000, 100000, 4)
         if okPressed:
             return d
     

@@ -116,10 +116,11 @@ class Canvas(QtWidgets.QGraphicsScene):
     def __init__(self):
         super(Canvas,self).__init__()
         path=get_resource_path(os.path.join('res','demo2.png'))
-        img = cv_imread(path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # img = cv_imread(path)
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # img = img[:,:,0]
+        img=np.zeros((1,1))
         self.piximg=QPixmap.fromImage(QImage(img.tobytes(),img.shape[1],img.shape[0],img.shape[1]*3,QtGui.QImage.Format_RGB888))
-        img = img[:,:,0]
 
         self.single_img=img
         self.worker=GraphicCalcThread(copy.deepcopy(self.single_img))
@@ -182,7 +183,7 @@ class Canvas(QtWidgets.QGraphicsScene):
         return super().mouseMoveEvent(ev)
 
 
-from items import RectArea,CalibrationRect,VerticalLine,HorizontalLine,CalibrationLine,DynamicRectArea
+from items import RectArea,CalibrationRect,VerticalLine,HorizontalLine,CalibrationLine
 import variables
 
 class MainViewer(QtWidgets.QGraphicsView):
@@ -199,7 +200,9 @@ class MainViewer(QtWidgets.QGraphicsView):
         self.setScene(self.scene)
         self.move(0,0)
         self.onDrawing=0
+        self.draggingAnchor=0
         self.drawingItem=None
+        self.movingItem=None
         self.measureItems=[]
 
         self.color_map=cv2.COLORMAP_JET
@@ -261,13 +264,29 @@ class MainViewer(QtWidgets.QGraphicsView):
                     self.drawingItem=None
                     self.drawDone.emit()
                     self.scene.frameUpdate.emit(variables.get_derivated_img(self.scene.single_img))
+        else:
+            pos=self.mapToScene(event.localPos().toPoint())
+            item = self.scene.itemAt(pos, self.transform())
+            if item is not None and hasattr(item,'isDragable'):
+                self.movingItem=item
+                self.draggingAnchor=pos
 
         return super().mousePressEvent(event)
+    
+    def mouseReleaseEvent(self, event: QtGui.QMouseEvent) -> None:
+        if self.movingItem is not None:
+            pos=self.mapToScene(event.localPos().toPoint())
+            self.movingItem.onFinishDrag(pos-self.draggingAnchor)
+            self.movingItem=None
+            self.scene.frameUpdate.emit(variables.get_derivated_img(self.scene.single_img))
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:
         if self.drawingItem is not None:
             pos=self.mapToScene(event.localPos().toPoint())
             self.drawingItem.onMoving(pos)
+        if self.movingItem is not None:
+            pos=self.mapToScene(event.localPos().toPoint())
+            self.movingItem.onDragging(pos-self.draggingAnchor)
 
         return super().mouseMoveEvent(event)
     

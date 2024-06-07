@@ -145,13 +145,23 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Load calibration</string>
+                 <string> Load calibration</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/icons/icons/icons8-upload-96.png</normaloff>:/icons/icons/icons8-upload-96.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>30</width>
-                  <height>30</height>
+                  <width>20</width>
+                  <height>20</height>
                  </size>
+                </property>
+                <property name="checkable">
+                 <bool>false</bool>
+                </property>
+                <property name="autoRepeat">
+                 <bool>false</bool>
                 </property>
                </widget>
                <widget class="QPushButton" name="saveCalibration">
@@ -164,11 +174,15 @@
                  </rect>
                 </property>
                 <property name="text">
-                 <string>Save calibration</string>
+                 <string> Save calibration</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/icons/icons/icons8-download-96.png</normaloff>:/icons/icons/icons8-download-96.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>30</width>
+                  <width>20</width>
                   <height>30</height>
                  </size>
                 </property>
@@ -217,8 +231,17 @@
                   <height>41</height>
                  </rect>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+    text-align: left;
+}</string>
+                </property>
                 <property name="text">
-                 <string>Background initialization</string>
+                 <string> Background initialize</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/icons/icons/icons8-image-96.png</normaloff>:/icons/icons/icons8-image-96.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -236,8 +259,17 @@
                   <height>41</height>
                  </rect>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+    text-align: left;
+}</string>
+                </property>
                 <property name="text">
-                 <string>Length calibration</string>
+                 <string> Length calibration</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/icons/icons/icons8-drafting-compass-100.png</normaloff>:/icons/icons/icons8-drafting-compass-100.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -255,8 +287,17 @@
                   <height>41</height>
                  </rect>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+    text-align: left;
+}</string>
+                </property>
                 <property name="text">
-                 <string>Magnetic curve calibration</string>
+                 <string> Curve calibration</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/icons/icons/icons8-line-chart-96.png</normaloff>:/icons/icons/icons8-line-chart-96.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -430,11 +471,15 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Clear All</string>
+                 <string>  Clear all</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/icons/icons/icons8-erase-96.png</normaloff>:/icons/icons/icons8-erase-96.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>50</width>
+                  <width>30</width>
                   <height>50</height>
                  </size>
                 </property>
@@ -446,7 +491,7 @@
                  <x>20</x>
                  <y>240</y>
                  <width>291</width>
-                 <height>191</height>
+                 <height>201</height>
                 </rect>
                </property>
                <property name="title">
@@ -516,31 +561,35 @@
                  </size>
                 </property>
                </widget>
-              </widget>
-              <widget class="QPushButton" name="clearMark">
-               <property name="geometry">
-                <rect>
-                 <x>40</x>
-                 <y>360</y>
-                 <width>241</width>
-                 <height>41</height>
-                </rect>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Clear All</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>50</width>
-                 <height>50</height>
-                </size>
-               </property>
+               <widget class="QPushButton" name="clearMark">
+                <property name="geometry">
+                 <rect>
+                  <x>20</x>
+                  <y>130</y>
+                  <width>241</width>
+                  <height>41</height>
+                 </rect>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>1</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>  Clear All</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="res.qrc">
+                  <normaloff>:/icons/icons/icons8-erase-96.png</normaloff>:/icons/icons/icons8-erase-96.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>30</width>
+                  <height>50</height>
+                 </size>
+                </property>
+               </widget>
               </widget>
              </widget>
             </widget>
@@ -684,6 +733,11 @@
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    text-align: left;
+}</string>
+                      </property>
                       <property name="text">
                        <string>  Capture</string>
                       </property>
@@ -719,13 +773,22 @@
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    text-align: left;
+}</string>
+                      </property>
                       <property name="text">
-                       <string>Load image</string>
+                       <string>  Load image</string>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="res.qrc">
+                        <normaloff>:/icons/icons/icons8-upload-96.png</normaloff>:/icons/icons/icons8-upload-96.png</iconset>
                       </property>
                       <property name="iconSize">
                        <size>
                         <width>30</width>
-                        <height>50</height>
+                        <height>30</height>
                        </size>
                       </property>
                       <property name="autoDefault">
