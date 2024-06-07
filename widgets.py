@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPainter,QPen,QPixmap,QImage,QColor
 from PyQt5.QtChart import QChartView,QChart,QLineSeries,QValueAxis
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QMenu, QAction,QFileDialog
 from PyQt5.QtCore import QRectF,QPointF
 from PyQt5.Qt import Qt
 import cv2
@@ -173,7 +173,6 @@ class Canvas(QtWidgets.QGraphicsScene):
         buffer.setsize(image.byteCount())
         arr = np.array(buffer).reshape((image.height(), image.width(), 4))
         return arr
-        
 
     def drawBackground(self, painter: QPainter, rect: QtCore.QRectF) -> None:
         painter.drawPixmap(0,0,self.piximg)
@@ -181,8 +180,6 @@ class Canvas(QtWidgets.QGraphicsScene):
     
     def mouseMoveEvent(self, ev: QtGui.QMouseEvent) -> None:
         return super().mouseMoveEvent(ev)
-
-
 
 
 from items import RectArea,CalibrationRect,VerticalLine,HorizontalLine,CalibrationLine,DynamicRectArea
@@ -273,6 +270,44 @@ class MainViewer(QtWidgets.QGraphicsView):
             self.drawingItem.onMoving(pos)
 
         return super().mouseMoveEvent(event)
+    
+    def contextMenuEvent(self, event):
+        context_menu = QMenu(self)
+
+        save_ori = QAction("Save image", self)
+        save_ori.triggered.connect(self.save_ori)
+
+        save_action = QAction("Save image with marks", self)
+        save_action.triggered.connect(self.save_view)
+
+
+        context_menu.addAction(save_ori)
+        context_menu.addAction(save_action)
+
+        context_menu.exec_(event.globalPos())
+
+    def save_ori(self):
+        
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "PNG Files (*.png)")
+        
+        if file_name:
+            arr = self.scene.single_img
+            arr = cv2.cvtColor(arr, cv2.COLOR_RGBA2BGRA)
+            cv2.imwrite(file_name, arr)
+
+    def save_view(self):
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "PNG Files (*.png)")
+        
+        if file_name:
+            rect = self.scene.sceneRect()
+            image = QImage(int(rect.width()), int(rect.height()), QImage.Format_ARGB32)
+            image.fill(Qt.white)
+            
+            painter = QPainter(image)
+            self.scene.render(painter)
+            painter.end()
+            
+            image.save(file_name)    
 
 import matplotlib.pyplot as plt
 from io import BytesIO
@@ -943,6 +978,35 @@ class ProfileChart(QChartView):
         self.mark2.setPlainText('{:.2f}'.format(point2.y()))
 
         super(ProfileChart, self).mouseMoveEvent(event)
+
+    def contextMenuEvent(self, event):
+        context_menu = QMenu(self)
+        save_action = QAction("Save", self)
+        save_action.triggered.connect(self.save_view)
+        context_menu.addAction(save_action)
+        context_menu.exec_(event.globalPos())
+    def save_view(self):
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "PNG Files (*.png)")
+        self.mark0.hide()
+        self.mark1.hide()
+        self.mark2.hide()
+        self.verticalLine.hide()
+        
+        if file_name:
+            rect = self.scene().sceneRect()
+            image = QImage(int(rect.width()), int(rect.height()), QImage.Format_ARGB32)
+            image.fill(Qt.white)
+            
+            painter = QPainter(image)
+            self.scene().render(painter)
+            painter.end()
+            
+            image.save(file_name)    
+        self.mark0.show()
+        self.mark1.show()
+        self.mark2.show()
+        self.verticalLine.show()
+
 
 class HorizontalChart(ProfileChart):
     def __init__(self, parent=None):

@@ -250,7 +250,7 @@ def setUpTrigger():
     main_ui.graphicsView.scene.resolutionChanged.connect(delete_profile)
     main_ui.graphicsView.scene.resolutionChanged.connect(delete_cali)
 
-    main_ui.saveScreenshot.clicked.connect(saveScreenshot)
+    # main_ui.saveScreenshot.clicked.connect(saveScreenshot)
     main_ui.loadScreenshot.clicked.connect(loadScreenshot)
 
 

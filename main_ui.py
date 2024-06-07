@@ -299,16 +299,6 @@ class Ui_MainWindow(object):
         self.snap.setFlat(False)
         self.snap.setObjectName("snap")
         self.verticalLayout_9.addWidget(self.snap)
-        self.saveScreenshot = QtWidgets.QPushButton(self.groupBox_2)
-        self.saveScreenshot.setEnabled(True)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.saveScreenshot.sizePolicy().hasHeightForWidth())
-        self.saveScreenshot.setSizePolicy(sizePolicy)
-        self.saveScreenshot.setIconSize(QtCore.QSize(30, 50))
-        self.saveScreenshot.setObjectName("saveScreenshot")
-        self.verticalLayout_9.addWidget(self.saveScreenshot)
         self.loadScreenshot = QtWidgets.QPushButton(self.groupBox_2)
         self.loadScreenshot.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -463,7 +453,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.ToolBox.setCurrentIndex(1)
-        self.profileTab.setCurrentIndex(1)
+        self.profileTab.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -489,7 +479,6 @@ class Ui_MainWindow(object):
         self.videoInfo.setText(_translate("MainWindow", "resolution"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Acquire"))
         self.snap.setText(_translate("MainWindow", "  Capture"))
-        self.saveScreenshot.setText(_translate("MainWindow", "Save image"))
         self.loadScreenshot.setText(_translate("MainWindow", "Load image"))
         self.label_2.setText(_translate("MainWindow", "Image List"))
         self.groupBox_7.setTitle(_translate("MainWindow", "Pseudo-Color"))

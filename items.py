@@ -220,7 +220,6 @@ class CalibrationLine():
 
         self.width=25 #pix
 
-
         self.mainLine=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.secLine0=QtWidgets.QGraphicsLineItem(0,0,0,0)
         self.secLine1=QtWidgets.QGraphicsLineItem(0,0,0,0)
