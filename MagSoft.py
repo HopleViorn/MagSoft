@@ -130,11 +130,34 @@ def delete_cali():
 
 def setUpProfileSettings():
     main_ui.autoScale.setChecked(variables.auto_scale)
+    main_ui.yMax.setEnabled(not variables.auto_scale)
+    main_ui.yMin.setEnabled(not variables.auto_scale)
+    main_ui.xMax.setEnabled(not variables.auto_scale)
+    main_ui.xMin.setEnabled(not variables.auto_scale)
     def onAutoScaleChanged():
         variables.auto_scale=main_ui.autoScale.isChecked()
         main_ui.verticalChart.updateProfile()
         main_ui.horizontalChart.updateProfile()
+        main_ui.yMax.setEnabled(not variables.auto_scale)
+        main_ui.yMin.setEnabled(not variables.auto_scale)
+        main_ui.xMax.setEnabled(not variables.auto_scale)
+        main_ui.xMin.setEnabled(not variables.auto_scale)
+        onScaleChanged()
+
+    def onScaleChanged():
+        variables.Ymin=main_ui.yMin.value()
+        variables.Ymax=main_ui.yMax.value()
+        variables.Xmin=main_ui.xMin.value()
+        variables.Xmax=main_ui.xMax.value()
+
+        main_ui.verticalChart.updateProfile()
+        main_ui.horizontalChart.updateProfile()
+
     main_ui.autoScale.stateChanged.connect(onAutoScaleChanged)
+    main_ui.yMax.valueChanged.connect(onScaleChanged)
+    main_ui.yMin.valueChanged.connect(onScaleChanged)
+    main_ui.xMax.valueChanged.connect(onScaleChanged)
+    main_ui.xMin.valueChanged.connect(onScaleChanged)
 
     main_ui.showMinMax.setChecked(variables.show_min_max)
     def onShowMinMaxChanged():

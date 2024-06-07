@@ -896,7 +896,14 @@
               </property>
               <layout class="QGridLayout" name="gridLayout">
                <item row="3" column="3">
-                <widget class="QDoubleSpinBox" name="xMax"/>
+                <widget class="QDoubleSpinBox" name="xMax">
+                 <property name="minimum">
+                  <double>-99999.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>99999.000000000000000</double>
+                 </property>
+                </widget>
                </item>
                <item row="3" column="2">
                 <widget class="QLabel" name="label_6">
@@ -913,7 +920,17 @@
                 </widget>
                </item>
                <item row="2" column="3">
-                <widget class="QDoubleSpinBox" name="yMax"/>
+                <widget class="QDoubleSpinBox" name="yMax">
+                 <property name="minimum">
+                  <double>-99999.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>99998.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>255.000000000000000</double>
+                 </property>
+                </widget>
                </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="label_3">
@@ -930,10 +947,24 @@
                 </widget>
                </item>
                <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="xMin"/>
+                <widget class="QDoubleSpinBox" name="xMin">
+                 <property name="minimum">
+                  <double>-99999.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>99999.000000000000000</double>
+                 </property>
+                </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="yMin"/>
+                <widget class="QDoubleSpinBox" name="yMin">
+                 <property name="minimum">
+                  <double>-99999.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>99999.000000000000000</double>
+                 </property>
+                </widget>
                </item>
                <item row="1" column="0" colspan="2">
                 <widget class="QCheckBox" name="autoScale">
@@ -967,7 +998,7 @@
                <item row="0" column="0">
                 <widget class="QCheckBox" name="showMinMax">
                  <property name="text">
-                  <string>Show min-max </string>
+                  <string>Show average min-max</string>
                  </property>
                 </widget>
                </item>
@@ -984,7 +1015,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="HorizonTab">
               <attribute name="title">

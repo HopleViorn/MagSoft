@@ -774,6 +774,7 @@ class SeriesThread(QtCore.QThread):
 import scipy
 
 class ProfileChart(QChartView):
+    scaleChanged = QtCore.pyqtSignal(object)
     def new_line(self,name):
         series=QLineSeries()
         series.setName(name)
@@ -856,8 +857,21 @@ class ProfileChart(QChartView):
 
         w=img.shape[1-self.axis]
 
-        self.chart.axisX().setRange(0,w)
-        self.chart.axisY().setRange(np.min(variables.mag_lut),np.max(variables.mag_lut))
+
+        if variables.auto_scale:
+            self.chart.axisX().setRange(0,w)
+            self.chart.axisY().setRange(np.min(variables.mag_lut),np.max(variables.mag_lut))
+            variables.Xmin=0
+            variables.Xmax=w
+            variables.Ymin=np.min(variables.mag_lut)
+            variables.Ymax=np.max(variables.mag_lut)
+            self.scaleChanged.emit((variables.Xmin,variables.Xmax,variables.Ymin,variables.Ymax))
+
+        else:
+            self.chart.axisX().setRange(variables.Xmin,variables.Xmax)
+            self.chart.axisY().setRange(variables.Ymin,variables.Ymax)
+
+
         mean=np.mean(img,axis=self.axis)
         maxi=np.max(img,axis=self.axis)
         minn=np.min(img,axis=self.axis)
@@ -886,21 +900,25 @@ class ProfileChart(QChartView):
         self.minimaMark.setPos(minimaPoint)
         # self.maximaLine.setLine(self.chart.plotArea().left(), maximaPoint.y(), self.chart.plotArea().right(),maximaPoint.y())
         # self.minimaLine.setLine(self.chart.plotArea().left(), minimaPoint.y(), self.chart.plotArea().right(),minimaPoint.y())
+        
 
         if isinstance(variables.profile_area, RectArea):
             self.series1.show()
             self.series2.show()
             self.mark1.show()
             self.mark2.show()
-            self.minimaMark.hide()
-            self.maximaMark.hide()
         else:
             self.series1.hide()
             self.series2.hide()
             self.mark1.hide()
             self.mark2.hide()
+        
+        if variables.show_min_max is True:
             self.minimaMark.show()
             self.maximaMark.show()
+        else:
+            self.minimaMark.hide()
+            self.maximaMark.hide()
 
     def mouseMoveEvent(self, event):
         pos = event.localPos()

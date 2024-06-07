@@ -73,7 +73,7 @@ Ymin=0
 Ymax=255
 Xmin=0
 Xmax=255
-show_min_max=True
+show_min_max=False
 smooth=True
 auto_scale=True
 
