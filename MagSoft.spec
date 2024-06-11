@@ -5,7 +5,7 @@ a = Analysis(
     ['MagSoft.py'],
     pathex=[],
     binaries=[],
-    datas=[('res', 'res')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -31,6 +31,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['C:\\Users\\97023\\Desktop\\MagSoft\\icons\\icons8-science-class-with-nucleus-and-atoms-revolving-around-it-96.png'],
 )
 coll = COLLECT(
     exe,

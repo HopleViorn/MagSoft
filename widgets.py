@@ -806,6 +806,7 @@ class ProfileViewer(ImgView):
         if variables.currentTab==self.axis:
             self.work.start()
 
+from scipy import signal as sci_signal
 class SeriesThread(QtCore.QThread):
     finish = QtCore.pyqtSignal(object)
     def __init__(self,axis):
@@ -828,9 +829,9 @@ class SeriesThread(QtCore.QThread):
         maxi=np.max(img,axis=self.axis)
         minn=np.min(img,axis=self.axis)
         if len(mean) > 21 and variables.smooth is True:
-            mean=scipy.signal.savgol_filter(mean,21,2) 
-            maxi=scipy.signal.savgol_filter(maxi,21,2)
-            minn=scipy.signal.savgol_filter(minn,21,2)
+            mean=sci_signal.savgol_filter(mean,21,2) 
+            maxi=sci_signal.savgol_filter(maxi,21,2)
+            minn=sci_signal.savgol_filter(minn,21,2)
         maxima=np.max(mean)
         maxpos=np.argmax(mean)*variables.mm_per_pix
         minima=np.min(mean)
@@ -838,7 +839,6 @@ class SeriesThread(QtCore.QThread):
         minima=np.min(mean)
         self.finish.emit((mean,maxi,minn,maxima,maxpos,minima,minpos,w))
 
-import scipy
 
 class ProfileChart(QChartView):
     scaleChanged = QtCore.pyqtSignal(object)
