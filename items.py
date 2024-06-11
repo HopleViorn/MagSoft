@@ -327,7 +327,7 @@ class CalibrationLine():
 
     def getDouble(self):
         from MagSoft import main_ui
-        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Actual Length(μm):", 0, 0, 100000, 4)
+        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Actual Length(mm):", 0, 0, 1000000, 4)
         if okPressed:
             return d
 
@@ -422,7 +422,7 @@ class CalibrationRect(QtWidgets.QGraphicsRectItem):
 
     def getDouble(self):
         from MagSoft import main_ui
-        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Magfield Strength (mT):", 0, -100000, 100000, 4)
+        d, okPressed = QtWidgets.QInputDialog.getDouble(main_ui, "Calibration","Flux Density (mT):", 0, -100000, 100000, 4)
         if okPressed:
             return d
     

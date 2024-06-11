@@ -903,6 +903,8 @@ class ProfileChart(QChartView):
         self.worker=SeriesThread(self.axis)
         self.worker.finish.connect(self.callback)
 
+        self.mouse_in=None
+
     def setProfile(self,img):
         self.profile=np.zeros((1,1)).astype(np.uint8) if img is None else img
         self.updateProfile()
@@ -910,20 +912,31 @@ class ProfileChart(QChartView):
     def callback(self,res):
         mean,maxi,minn,maxima,maxpos,minima,minpos,w=res
         if variables.auto_scale:
-            self.chart.axisX().setRange(0,w)
+            self.chart.axisX().setRange(0,w*variables.mm_per_pix)
             self.chart.axisY().setRange(np.min(variables.mag_lut),np.max(variables.mag_lut))
             variables.Xmin=0
-            variables.Xmax=w
+            variables.Xmax=w*variables.mm_per_pix
             variables.Ymin=np.min(variables.mag_lut)
             variables.Ymax=np.max(variables.mag_lut)
             self.scaleChanged.emit((variables.Xmin,variables.Xmax,variables.Ymin,variables.Ymax))
         else:
             self.chart.axisX().setRange(variables.Xmin,variables.Xmax)
             self.chart.axisY().setRange(variables.Ymin,variables.Ymax)
-
+        
         self.series0.replace([QPointF(i*variables.mm_per_pix,mean[i]) for i in range(0,len(mean))])
         self.series1.replace([QPointF(i*variables.mm_per_pix,maxi[i]) for i in range(0,len(maxi))])
         self.series2.replace([QPointF(i*variables.mm_per_pix,minn[i]) for i in range(0,len(minn))])
+
+        axisX = QValueAxis()      # x轴
+        axisX.setTitleText("Width (mm)")
+        axisY = QValueAxis()      # y轴
+        axisY.setTitleText("Field (mT)")    # 轴标题
+        self.chart.setAxisX(axisX, self.series0)    # 为序列series0设置坐标轴
+        self.chart.setAxisY(axisY, self.series0)
+        self.chart.setAxisX(axisX, self.series1)    # 为序列series0设置坐标轴
+        self.chart.setAxisY(axisY, self.series1)
+        self.chart.setAxisX(axisX, self.series2)    # 为序列series0设置坐标轴
+        self.chart.setAxisY(axisY, self.series2)
 
         self.maximaMark.setPlainText('MAX : {:.2f}'.format(maxima))
         self.minimaMark.setPlainText('MIN : {:.2f}'.format(minima))
@@ -932,7 +945,10 @@ class ProfileChart(QChartView):
         minimaPoint=self.chart.mapToPosition(QPointF(minpos,minima))
         self.maximaMark.setPos(maximaPoint)
         self.minimaMark.setPos(minimaPoint)
-    
+
+        if self.mouse_in is not None:
+            self.updateLine(self.mouse_in)
+
     def updateProfile(self):
         if variables.profile_area is not None:
             l,r,u,d=variables.profile_area.getBox()
@@ -973,16 +989,28 @@ class ProfileChart(QChartView):
             self.minimaMark.hide()
             self.maximaMark.hide()
 
-    def mouseMoveEvent(self, event):
-        pos = event.localPos()
-        chart_value = self.chart.mapToValue(QPointF(pos))
-        x_value = chart_value.x()
+    def updateLine(self,value):
+        x_value,y_value=value
         if x_value < 0 or x_value > self.chart.axisX().max():
+            # self.mouse_in=None
+            # self.mark0.hide()
+            # self.mark1.hide()
+            # self.mark2.hide()
+            # self.verticalLine.hide()
             return
+        if variables.mm_per_pix==0:
+            return
+        
+        # if self.mouse_in is None:
+        self.mouse_in=(x_value,y_value)
+            # self.mark0.show()
+            # self.mark1.show()
+            # self.mark2.show()
+            # self.verticalLine.show()
 
-        point0 = QPointF(x_value, self.series0.at(x_value).y())
-        point1 = QPointF(x_value, self.series1.at(x_value).y())
-        point2 = QPointF(x_value, self.series2.at(x_value).y())
+        point0 = QPointF(x_value, self.series0.at(x_value/variables.mm_per_pix).y())
+        point1 = QPointF(x_value, self.series1.at(x_value/variables.mm_per_pix).y())
+        point2 = QPointF(x_value, self.series2.at(x_value/variables.mm_per_pix).y())
 
         back0=self.chart.mapToPosition(QPointF(point0))
         back1=self.chart.mapToPosition(QPointF(point1))
@@ -995,6 +1023,13 @@ class ProfileChart(QChartView):
         self.mark0.setPlainText('{:.2f}'.format(point0.y()))
         self.mark1.setPlainText('{:.2f}'.format(point1.y()))
         self.mark2.setPlainText('{:.2f}'.format(point2.y()))
+
+    def mouseMoveEvent(self, event):
+        pos = event.localPos()
+        chart_value = self.chart.mapToValue(QPointF(pos))
+        x_value = chart_value.x()
+        y_value = chart_value.y()
+        self.updateLine((x_value,y_value))
 
         super(ProfileChart, self).mouseMoveEvent(event)
 

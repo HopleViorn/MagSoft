@@ -160,7 +160,7 @@ class ToupCamWidget(QWidget):
         gboxds = QGroupBox("Temporal Filter")
         self.lbl_frame_count = QLabel(str('0 frames'))
         self.slider_frame = QSlider(Qt.Horizontal)
-        self.slider_frame.setRange(0, 60)
+        self.slider_frame.setRange(0, 150)
         self.slider_frame.setValue(0)
         self.slider_frame.setEnabled(False)
 
@@ -177,7 +177,7 @@ class ToupCamWidget(QWidget):
             self.lbl_frame_count.setText('{} frames'.format(val))
             variables.frame_count=val
         def onAccuChange(val):
-            k=1-10**(-val*2.5/1000)
+            k=1-10**(-val*1.5/1000)
             self.lbl_accumulate.setText('{:.2f} %'.format(k*100))
             variables.accu_k=k
 
