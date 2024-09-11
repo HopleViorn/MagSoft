@@ -101,7 +101,7 @@ def get_derivated_img(img):
 
     img=img-base_img
     img[img<0]=0
-    img=img.astype(np.uint8)
+    img=img.astype(np.int8)
     return img
 
 current_file_name='Default Config'

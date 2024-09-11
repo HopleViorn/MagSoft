@@ -105,6 +105,7 @@ class GraphicCalcThread(QtCore.QThread):
             mag=mag.astype(np.uint8)
         else:
             mag=der
+
         img=cv2.applyColorMap(mag,variables.color_map)
         
         self.finish.emit(img,der)
